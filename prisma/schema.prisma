@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  name      String
+  username  String
+  password  String
+
+  @@unique([username])
+}
+
+model Dog {
+  id            Int         @id @default(autoincrement())
+  name          String
+  breed         Breed       @relation(fields: [breedId], references: [id])
+  breedId       Int
+  sex           String
+  vaccines      Vaccine[]
+  fixed         DateTime?
+  heat          DateTime?
+  chipId        String?
+  scanId        String?
+  owners        Owner[]
+  attendances   Attendance[]
+}
+
+model Attendance {
+  id            Int         @id @default(autoincrement())
+  dog           Dog         @relation(fields: [dogId], references: [id])
+  dogId         Int
+  start         DateTime    @default(now())
+  end           DateTime?
+  payment       Pass?        @relation(fields: [paymentId], references: [id])
+  paymentId     Int?
+}
+
+model Pass {
+  id            Int         @id @default(autoincrement())
+  name          String
+  duration      String
+  remaining     String?
+  expiration    DateTime?
+  limit         String?
+  overtime      String?
+  price         Int
+}
+
+model Owner {
+  id            Int         @id @default(autoincrement())
+  name          String
+  phone         Phone[]
+  email         String?
+  passes        Pass[]
+  dogs          Dog[]
+}
+
+model Vaccine {
+  id        Int     @id @default(autoincrement())
+  name      String
+}
+
+model Breed {
+  id        Int     @id @default(autoincrement())
+  name      String
+  notes     String?
+}
+model Phone {
+  id        Int     @id @default(autoincrement())
+  name      String
+  number    Int
+}

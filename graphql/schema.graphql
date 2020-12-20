@@ -1,0 +1,82 @@
+scalar Date
+type Query {
+  info: String!
+  dogs: [Dog!]!
+  users: [User!]!
+  breeds: [Breed!]!
+  attendances: [Attendance!]!
+  passes: [Pass!]!
+  owners: [Owner!]!
+}
+type Mutation {
+  createDog(name: String!, breedId: Int!, sex: String!): Dog!
+  deleteDog(id: Int): Dog!
+
+  createBreed(name: String!): Breed!
+
+  createOwner(name: String!, dogId: Int!, phone: Int!): Owner!
+
+  createPass(
+    name: String!
+    duration: String!
+    expiration: String
+    limit: String
+    price: Int!
+  ): Pass!
+
+  startAttendance(dogId: Int!): Attendance!
+  endAttendance(id: Int!): Attendance!
+  updateAttendance(id: Int!, start: Date, end: Date): Attendance!
+
+  login(username: String!, password: String!): AuthPayload
+  signup(username: String!, password: String!, name: String!): AuthPayload
+  deleteUser(id: Int!): User
+}
+type AuthPayload {
+  token: String
+  user: User
+}
+type Dog {
+  id: ID!
+  name: String!
+  breed: Breed!
+}
+type Owner {
+  id: ID!
+  name: String!
+  dogs: [Dog!]!
+  phone: [Phone!]!
+  passes: [Pass!]
+}
+type User {
+  id: ID!
+  name: String!
+  role: String
+}
+type Breed {
+  id: ID!
+  name: String!
+  notes: String
+}
+type Attendance {
+  id: ID!
+  dog: Dog!
+  start: Date!
+  end: Date
+  payment: Pass
+}
+type Pass {
+  id: ID!
+  name: String!
+  duration: String!
+  remaining: String
+  expiration: String
+  limit: String
+  price: Int!
+}
+type Phone {
+  id: ID!
+  name: String!
+  number: String!
+  owner: Owner!
+}
