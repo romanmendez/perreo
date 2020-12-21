@@ -1,5 +1,11 @@
-module.exports = {
+const OwnerQueryType = `
+  owners: [Owner!]!
+`;
+
+const OwnerQueryResolver = {
   owners: async (parent, args, context) => {
-    return await context.prisma.owner.findMany();
+    return await context.model.owner.find();
   },
 };
+
+module.exports = { OwnerQueryResolver, OwnerQueryType };

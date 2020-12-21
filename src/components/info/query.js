@@ -1,5 +1,11 @@
-module.exports = {
-  info: (parent, args, context) => {
+const InfoQueryType = `
+  info: String!
+`;
+
+const InfoQueryResolver = {
+  info: () => {
     return "Bienvenido a la Guaurderia";
   },
 };
+
+module.exports = { InfoQueryType, InfoQueryResolver };

@@ -1,5 +1,11 @@
-module.exports = {
+const AttendanceQueryType = `
+  attendances: [Attendance!]!
+`;
+
+const AttendanceQueryResolver = {
   attendances: async (parent, args, context) => {
-    return await context.prisma.attendance.findMany();
+    return await context.model.attendance.find();
   },
 };
+
+module.exports = { AttendanceQueryResolver, AttendanceQueryType };

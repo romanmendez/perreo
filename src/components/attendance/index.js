@@ -1,12 +1,25 @@
-const AttendanceQuery = require("./query");
-const AttendanceMutation = require("./mutation");
+const { AttendanceQueryType, AttendanceQueryResolver } = require("./query");
+const {
+  AttendanceMutationResolver,
+  AttendanceMutationType,
+} = require("./mutation");
+const { AttendanceModel, AttendanceType } = require("./model");
 
 const Attendance = {
-  dog: (parent, args, context) => {
-    return context.prisma.attendance
-      .findUnique({ where: { id: parent.id } })
-      .dog();
+  dog: async (parent, args, context) => {
+    const attendance = await context.model.attendance
+      .findById(parent.id)
+      .populate("dog");
+    return attendance.dog;
   },
 };
 
-module.exports = { Attendance, AttendanceQuery, AttendanceMutation };
+module.exports = {
+  Attendance,
+  AttendanceQueryType,
+  AttendanceQueryResolver,
+  AttendanceMutationResolver,
+  AttendanceMutationType,
+  AttendanceModel,
+  AttendanceType,
+};

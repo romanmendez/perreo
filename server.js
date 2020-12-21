@@ -1,22 +1,18 @@
-const fs = require("fs");
-const path = require("path");
 const { ApolloServer } = require("apollo-server");
-const { PrismaClient } = require("@prisma/client");
-const resolvers = require("./src/resolvers");
+const resolvers = require("./graphql/resolvers");
+const model = require("./db/models");
 const { getUserId } = require("./utils/auth");
+const types = require("./graphql/types");
 
-const prisma = new PrismaClient();
+require("./db/config");
 
 const server = new ApolloServer({
-  typeDefs: fs.readFileSync(
-    path.join(__dirname, "graphql/schema.graphql"),
-    "utf8"
-  ),
+  typeDefs: types,
   resolvers,
   context: ({ req }) => {
     return {
       ...req,
-      prisma,
+      model,
       userId:
         req && req.headers.authorization
           ? getUserId(req.headers.authorization)

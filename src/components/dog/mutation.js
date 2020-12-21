@@ -1,22 +1,40 @@
-module.exports = {
+const { updateResolver } = require("../../../graphql/defaults");
+
+const DogMutationType = `
+  createDog(
+    name: String!
+    breed: String!
+    sex: String!
+    vaccines: [String!]
+    fixed: Boolean
+    heat: Date
+    chip: String
+    scan: String
+    note: String
+  ): Dog!
+  updateDog(
+    id: String!
+    name: String
+    breed: String
+    sex: String
+    vaccines: [String!]
+    fixed: Boolean
+    heat: Date
+    chip: String
+    scan: String
+    note: String
+  ): Dog!
+`;
+const DogMutationResolver = {
   createDog: async (parent, args, context) => {
     // const { userId } = context;
     // if (!userId) throw new Error("You must be logged in to add a new dog.");
 
-    const newDog = await context.prisma.dog.create({
-      data: {
-        name: args.name,
-        sex: args.sex,
-        breed: { connect: { id: Number(args.breedId) } },
-      },
-    });
-    console.log(newDog);
+    const newDog = await context.model.dog.create({ ...args });
     return newDog;
   },
-  deleteDog: async (parent, args, context) => {
-    const { userId } = context;
-    if (!userId) throw new Error("You must be logged in to delete a dog.");
-
-    return await context.prisma.dog.delete({ where: { id: args.id } });
-  },
+  updateDog: async (parent, args, context) =>
+    await updateResolver("dog", args, context),
 };
+
+module.exports = { DogMutationType, DogMutationResolver };

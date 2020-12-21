@@ -1,17 +1,22 @@
-const OwnerQuery = require("./query");
-const OwnerMutation = require("./mutation");
+const { OwnerModel, OwnerType } = require("./model");
+const { OwnerQueryType, OwnerQueryResolver } = require("./query");
+const { OwnerMutationType, OwnerMutationResolver } = require("./mutation");
 
 const Owner = {
   dogs: async (parent, args, context) => {
-    return await context.prisma.owner
-      .findUnique({ where: { id: parent.id } })
-      .dogs();
-  },
-  phone: async (parent, args, context) => {
-    return await context.prisma.owner
-      .finUnique({ where: { id: parent.id } })
-      .phone();
+    const owner = await context.model.owner
+      .findById(parent.id)
+      .populate("dogs");
+    return owner.dogs;
   },
 };
 
-module.exports = { Owner, OwnerQuery, OwnerMutation };
+module.exports = {
+  Owner,
+  OwnerQueryType,
+  OwnerQueryResolver,
+  OwnerMutationType,
+  OwnerMutationResolver,
+  OwnerModel,
+  OwnerType,
+};

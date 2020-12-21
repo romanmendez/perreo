@@ -1,3 +1,3 @@
-const InfoQuery = require("./query");
+const { InfoQueryType, InfoQueryResolver } = require("./query");
 
-module.exports = { InfoQuery };
+module.exports = { InfoQueryType, InfoQueryResolver };
