@@ -4,6 +4,7 @@ const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
   endAttendance(id: String!): Attendance!
   updateAttendance(id: String!, start: Date, end: Date): Attendance!
+  closeAttendance(id: String!, passOwnedId: String!): Attendance!
   deleteAttendance(id: String!): Int!
 `;
 
@@ -15,6 +16,7 @@ const AttendanceMutationResolver = {
     return await context.model.attendance.create({
       start,
       dog,
+      payment: null,
     });
   },
   endAttendance: async (parent, args, context) => {
@@ -24,7 +26,6 @@ const AttendanceMutationResolver = {
       { end },
       { returnOriginal: false }
     );
-    console.log(attendance);
     return attendance;
   },
   updateAttendance: async (parent, args, context) =>

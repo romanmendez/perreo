@@ -1,7 +1,7 @@
 const { ApolloServer } = require("apollo-server");
 const resolvers = require("./graphql/resolvers");
 const model = require("./db/models");
-const { getUserId } = require("./utils/auth");
+const utils = require("./utils");
 const types = require("./graphql/types");
 
 require("./db/config");
@@ -12,10 +12,11 @@ const server = new ApolloServer({
   context: ({ req }) => {
     return {
       ...req,
+      utils,
       model,
       userId:
         req && req.headers.authorization
-          ? getUserId(req.headers.authorization)
+          ? utils.getUserId(req.headers.authorization)
           : null,
     };
   },

@@ -6,12 +6,27 @@ const OwnerType = `
     firstName: String!
     lastName: String!
     email: String
-    dni: String
+    dni: String!
     phone: [String!]!
-    passes: [Pass!]
-    dogs: [Dog!]!
+    passes: [PassOwned!]
+    dogs: [Dog!]
   }
 `;
+
+const OwnerResolver = {
+  dogs: async (parent, args, context) => {
+    const owner = await context.model.owner
+      .findById(parent.id)
+      .populate("dogs");
+    return owner.dogs;
+  },
+  passes: async (parent, args, context) => {
+    const owner = await context.model.owner
+      .findById(parent.id)
+      .populate("passes");
+    return owner.passes;
+  },
+};
 
 const Owner = new Schema(
   {
@@ -20,8 +35,9 @@ const Owner = new Schema(
     email: { type: String },
     password: { type: String },
     phone: [{ type: String, required: true }],
-    dni: { type: String },
-    dogs: [{ type: Schema.Types.ObjectId, ref: "dog", required: true }],
+    dni: { type: String, required: true },
+    dogs: [{ type: Schema.Types.ObjectId, ref: "dog" }],
+    passes: [{ type: Schema.Types.ObjectId, ref: "pass_owned" }],
   },
   {
     timestamps: true,
@@ -30,4 +46,4 @@ const Owner = new Schema(
 );
 
 const OwnerModel = model("owner", Owner);
-module.exports = { OwnerModel, OwnerType };
+module.exports = { OwnerModel, OwnerType, OwnerResolver };

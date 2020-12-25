@@ -6,8 +6,7 @@ const OwnerMutationType = `
     lastName: String!
     email: String
     phone: Int!
-    dni: String
-    dogId: String!
+    dni: String!
   ): Owner!
   updateOwner(
     id: String!
@@ -22,16 +21,10 @@ const OwnerMutationType = `
 
 const OwnerMutationResolver = {
   createOwner: async (parent, args, context) => {
-    const { firstName, lastName, phone } = args;
-    const dog = await context.model.dog.findById(args.dogId);
+    const exists = await context.model.owner.exists({ dni: args.dni });
+    if (exists) throw new Error("A user with this DNI already exists.");
 
-    return await context.model.owner.create({
-      firstName,
-      lastName,
-      phone,
-      roll: "owner",
-      dogs: [dog],
-    });
+    return await context.model.owner.create(args);
   },
   updateOwner: async (parent, args, context) =>
     await updateResolver("owner", args, context),

@@ -16,11 +16,13 @@ const {
 } = require("../src/components/owner");
 const {
   PassType,
+  PassOwnedType,
   PassQueryType,
   PassMutationType,
 } = require("../src/components/pass");
 const {
   UserType,
+  AuthType,
   UserQueryType,
   UserMutationType,
 } = require("../src/components/user");
@@ -46,5 +48,7 @@ module.exports = `
   ${AttendanceType}
   ${OwnerType}
   ${PassType}
+  ${PassOwnedType}
   ${UserType}
+  ${AuthType}
 `;
