@@ -7,12 +7,10 @@ const PassType = `
     type: String!
     days: Int!
     hours: Int!
-    durationMs: Int!
     expiration: Date
     price: Int!
   }
 `;
-
 const PassOwnedType = `
   type PassOwned {
     id: ID!
@@ -21,6 +19,25 @@ const PassOwnedType = `
     balance: Int
   }
 `;
+
+const Pass = new Schema(
+  {
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+    days: { type: Number, required: true },
+    hours: { type: Number, required: true },
+    expiration: { type: Date },
+    price: { type: Number, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
+const PassOwned = new Schema({
+  owner: { type: Schema.Types.ObjectId, ref: "owner" },
+  pass: { type: Schema.Types.ObjectId, ref: "pass" },
+  balance: { type: Number },
+});
 
 const PassOwnedResolver = {
   owner: async (parent, args, context) => {
@@ -36,27 +53,6 @@ const PassOwnedResolver = {
     return sale.pass;
   },
 };
-
-const Pass = new Schema(
-  {
-    name: { type: String, required: true },
-    type: { type: String, required: true },
-    days: { type: Number, required: true },
-    hours: { type: Number, required: true },
-    durationMs: { type: Number, required: true },
-    expiration: { type: Date },
-    price: { type: Number, required: true },
-  },
-  {
-    timestamps: true,
-  }
-);
-
-const PassOwned = new Schema({
-  owner: { type: Schema.Types.ObjectId, ref: "owner" },
-  pass: { type: Schema.Types.ObjectId, ref: "pass" },
-  balance: { type: Number },
-});
 
 const PassModel = model("pass", Pass);
 const PassOwnedModel = model("pass_owned", PassOwned);

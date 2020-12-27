@@ -1,6 +1,5 @@
 const { GraphQLScalarType } = require("graphql");
 const { Kind } = require("graphql/language");
-const { InfoQueryResolver } = require("../src/components/info");
 const {
   DogResolver: Dog,
   DogMutationResolver,
@@ -22,13 +21,13 @@ const {
   OwnerQueryResolver,
 } = require("../src/components/owner");
 const {
+  UserResolver: User,
   UserMutationResolver,
   UserQueryResolver,
 } = require("../src/components/user");
 
 module.exports = {
   Query: {
-    ...InfoQueryResolver,
     ...DogQueryResolver,
     ...AttendanceQueryResolver,
     ...PassQueryResolver,
@@ -46,6 +45,7 @@ module.exports = {
   Attendance,
   Owner,
   PassOwned,
+  User,
   Date: new GraphQLScalarType({
     name: "Date",
     description: "Date custom scalar type",

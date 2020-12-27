@@ -1,8 +1,10 @@
 const { createToken, getUserId } = require("./auth");
-const { durationMs } = require("./date-time");
+const { duration, timeFromNow, totalDuration } = require("./date-time");
 
 module.exports = {
   createToken,
   getUserId,
-  durationMs,
+  duration,
+  timeFromNow,
+  totalDuration,
 };

@@ -1,4 +1,3 @@
-const { InfoQueryType } = require("../src/components/info");
 const {
   DogType,
   DogMutationType,
@@ -22,6 +21,7 @@ const {
 } = require("../src/components/pass");
 const {
   UserType,
+  AddressType,
   AuthType,
   UserQueryType,
   UserMutationType,
@@ -30,7 +30,6 @@ const {
 module.exports = `
   scalar Date
   type Query {
-    ${InfoQueryType}
     ${DogQueryType}
     ${AttendanceQueryType}
     ${OwnerQueryType}
@@ -51,4 +50,5 @@ module.exports = `
   ${PassOwnedType}
   ${UserType}
   ${AuthType}
+  ${AddressType}
 `;

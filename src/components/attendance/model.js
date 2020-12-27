@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
-const moment = require("moment");
+const { format, formatDistanceStrict } = require("date-fns");
+const { DateTime } = require("luxon");
 
 const Attendance = new Schema(
   {
@@ -17,55 +18,38 @@ const AttendanceType = `
     type Attendance {
       id: ID!
       dog: Dog!
-      start: Date!
-      end: Date
-      date(format: String!): String
-      timeDisplay: String
-      durationMs: Int!
+      start: String!
+      end: String
+      hours: Int!
       validPasses: [PassOwned!]
       payment: Pass
     }
   `;
 
 const AttendanceResolver = {
+  start: async (parent, args, context) => {
+    const attendance = await context.model.attendance.findById(parent.id);
+    return format(attendance.start, "dd/MM/yyyy H:mm");
+  },
+  end: async (parent, args, context) => {
+    const attendance = await context.model.attendance.findById(parent.id);
+    return attendance.end
+      ? format(attendance.end, "dd/MM/yyyy H:mm")
+      : "active";
+  },
   dog: async (parent, args, context) => {
     const attendance = await context.model.attendance
       .findById(parent.id)
       .populate("dog");
     return attendance.dog;
   },
-  date: async (parent, args, context) => {
-    const format = {
-      short: "DD/MM/YYYY",
-      long: "Do MMMM YYYY",
-    };
-    const attendance = await context.model.attendance.findById(parent.id);
-    const date = moment(attendance.start).format(format[args.format]);
-    return date;
-  },
-  timeDisplay: async (parent, args, context) => {
-    const attendance = await context.model.attendance.findById(parent.id);
-    const start = moment(attendance.start);
-    const end = attendance.end ? moment(attendance.end) : moment();
-
-    const duration = moment.utc(end.diff(start));
-    const hours = duration.format("H");
-    const minutes = duration.format("mm");
-
-    const hoursDisplay = hours > 0 ? hours + "h" : "";
-    const minutesDisplay = minutes > 0 ? minutes + "m" : "";
-
-    return `${
-      minutesDisplay ? hoursDisplay + " " : hoursDisplay
-    }${minutesDisplay}`;
-  },
-  durationMs: async (parent, args, context) => {
-    const { start, end } = await context.model.attendance.findById(parent.id);
-    const duration = context.utils.durationMs(start, end);
-    return duration;
+  hours: async (parent, args, context) => {
+    const att = await context.model.attendance.findById(parent.id);
+    const { hours } = context.utils.duration(att);
+    return Math.ceil(hours);
   },
   validPasses: async (parent, args, context) => {
-    const { start, end } = await context.model.attendance.findById(parent.id);
+    const attendance = await context.model.attendance.findById(parent.id);
     const dog = await context.model.dog.findById(parent.dog).populate({
       path: "owners",
       select: "passes",
@@ -78,10 +62,10 @@ const AttendanceResolver = {
         },
       },
     });
-    const duration = context.utils.durationMs(start, end);
+    const duration = context.utils.duration(attendance);
     const validOwnedPasses = dog.owners.reduce((passes, owner) => {
       const valid = owner.passes.filter((passOwned) => {
-        return passOwned.pass.durationMs > duration;
+        return passOwned.pass.hours > duration.hours;
       });
       return [...passes, ...valid];
     }, []);

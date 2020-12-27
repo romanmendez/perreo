@@ -18,6 +18,7 @@ const server = new ApolloServer({
         req && req.headers.authorization
           ? utils.getUserId(req.headers.authorization)
           : null,
+      locale: req.headers["Accept-Language"],
     };
   },
 });

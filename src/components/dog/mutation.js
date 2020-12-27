@@ -29,13 +29,8 @@ const DogMutationType = `
 `;
 const DogMutationResolver = {
   createDog: async (parent, args, context) => {
-    // const { userId } = context;
-    // if (!userId) throw new Error("You must be logged in to add a new dog.");
     const owner = await context.model.owner.findById(args.ownerId);
-    if (!owner)
-      throw new Error(
-        "No owners found with this idea. You need a valid owner to register a dog."
-      );
+    if (!owner) throw new Error("Owner not found.");
 
     const newDog = await context.model.dog.create({ ...args, owners: [owner] });
     await owner.updateOne({

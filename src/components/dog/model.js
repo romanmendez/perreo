@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
-const moment = require("moment");
+const formatRelative = require("date-fns/formatRelative");
+const { es } = require("date-fns/locale");
 
 const Dog = new Schema(
   {
@@ -33,6 +34,8 @@ const DogType = `
     scan: String
     attendances: [Attendance!]
     lastAttendance: Attendance
+    lastSeen: String
+    weekDuration: String
     owners: [Owner!]
     notes: [String!]
   }
@@ -55,7 +58,21 @@ const DogResolver = {
     });
     if (!attendances.length) return null;
 
-    return attendances.sort((a, b) => b.end.getTime() - a.end.getTime())[0];
+    return attendances.sort((a, b) => b.start.getTime() - a.start.getTime())[0];
+  },
+  lastSeen: async (parent, args, context) => {
+    const lastAttendance = await DogResolver.lastAttendance(
+      parent,
+      args,
+      context
+    );
+    console.log(lastAttendance);
+    if (!lastAttendance) return null;
+    if (!lastAttendance.end) return "active";
+    return formatRelative(lastAttendance.end, new Date(), {
+      weekStartsOn: 1,
+      locale: es,
+    });
   },
 };
 

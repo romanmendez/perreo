@@ -16,7 +16,6 @@ const PassMutationType = `
 const PassMutationResolver = {
   createPass: async (parent, args, context) => {
     const { name, type, days, hours, expiration, price } = args;
-    const durationMs = hours * 60 * 60000;
 
     switch (type) {
       case "pack":
@@ -29,7 +28,6 @@ const PassMutationResolver = {
           type,
           days,
           hours,
-          durationMs,
           price,
         });
       case "subscription":
@@ -42,7 +40,6 @@ const PassMutationResolver = {
           type,
           expiration,
           hours,
-          durationMs,
           price,
         });
       default:
