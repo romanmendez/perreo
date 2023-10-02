@@ -1,1 +1,3 @@
-const { Mutation } = require("../graphql/resolvers");
+const Resolvers = require("../graphql/resolvers");
+
+console.log(Resolvers.Attendance.dog);

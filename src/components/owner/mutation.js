@@ -15,7 +15,6 @@ const OwnerMutationType = `
     email: String
     phone: Int
     dni: String
-    dogId: String
   ): Owner!
 `;
 

@@ -20,6 +20,7 @@
     "sharp": "^0.27.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
     "@prisma/cli": "^2.13.1",
     "bcryptjs": "^2.4.3",
     "eslint": "^7.16.0",
@@ -28,7 +29,8 @@
   },
   "scripts": {
     "start": "nodemon -e graphql,prisma,js,json server.js",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "seed": "node ./db/seed.js"
   },
   "keywords": [],
   "author": "",
