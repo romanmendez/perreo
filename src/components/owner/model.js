@@ -1,16 +1,5 @@
 const { Schema, model } = require("mongoose");
 
-const OwnerType = `
-  type Owner {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    email: String
-    dni: String!
-    phone: [String!]!
-  }
-`;
-
 const Owner = new Schema(
   {
     firstName: { type: String, required: true },
@@ -24,6 +13,17 @@ const Owner = new Schema(
     toJSON: { virtuals: true },
   }
 );
+
+const OwnerType = `
+  type Owner {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String
+    dni: String!
+    phone: [String!]!
+  }
+`;
 
 const OwnerModel = model("owner", Owner);
 module.exports = { OwnerModel, OwnerType, OwnerResolver };
