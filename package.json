@@ -1,5 +1,5 @@
 {
-  "name": "guaurderia-server",
+  "name": "perrea",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,6 +7,7 @@
     "@jackfranklin/test-data-bot": "^1.3.0",
     "@prisma/client": "^2.13.1",
     "apollo-server": "^2.19.0",
+    "cloudinary": "^1.23.0",
     "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
     "graphql": "^15.4.0",
@@ -15,7 +16,8 @@
     "luxon": "^1.25.0",
     "mockingoose": "^2.13.2",
     "moment": "^2.29.1",
-    "mongoose": "^5.11.8"
+    "mongoose": "^5.11.8",
+    "sharp": "^0.27.0"
   },
   "devDependencies": {
     "@prisma/cli": "^2.13.1",

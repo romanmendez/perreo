@@ -1,5 +1,6 @@
 const { createToken, getUserId } = require("./auth");
 const { duration, timeFromNow, totalDuration } = require("./date-time");
+const { uploadProfilePic, getProfilePic } = require("./image");
 
 module.exports = {
   createToken,
@@ -7,4 +8,6 @@ module.exports = {
   duration,
   timeFromNow,
   totalDuration,
+  uploadProfilePic,
+  getProfilePic,
 };

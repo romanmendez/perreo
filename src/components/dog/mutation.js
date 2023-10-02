@@ -7,6 +7,7 @@ const DogMutationType = `
     sex: String!
     ownerId: String!
     vaccines: [String!]
+    profilePic: String
     fixed: Boolean
     heat: Date
     chip: String
@@ -19,6 +20,7 @@ const DogMutationType = `
     breed: String
     sex: String
     vaccines: [String!]
+    profilePic: String
     fixed: Boolean
     heat: Date
     chip: String
@@ -32,7 +34,16 @@ const DogMutationResolver = {
     const owner = await context.model.owner.findById(args.ownerId);
     if (!owner) throw new Error("Owner not found.");
 
-    const newDog = await context.model.dog.create({ ...args, owners: [owner] });
+    const newDog = await context.model.dog.create({
+      ...args,
+      owners: [owner],
+    });
+    if (args.profilePic) {
+      const { public_id } = await context.utils.uploadProfilePic(
+        args.profilePic,
+        newDog._id
+      );
+    }
     await owner.updateOne({
       $push: { dogs: newDog },
     });

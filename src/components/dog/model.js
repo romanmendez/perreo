@@ -27,6 +27,7 @@ const DogType = `
     name: String!
     breed: String!
     sex: String!
+    profilePic: String
     vaccines: [String!]
     fixed: Boolean
     heat: Date
@@ -66,13 +67,15 @@ const DogResolver = {
       args,
       context
     );
-    console.log(lastAttendance);
     if (!lastAttendance) return null;
     if (!lastAttendance.end) return "active";
     return formatRelative(lastAttendance.end, new Date(), {
       weekStartsOn: 1,
       locale: es,
     });
+  },
+  profilePic: async (parent, args, context) => {
+    return await context.utils.getProfilePic(`${parent.id}/profile`);
   },
 };
 
