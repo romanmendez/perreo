@@ -26,4 +26,4 @@ const OwnerType = `
 `;
 
 const OwnerModel = model("owner", Owner);
-module.exports = { OwnerModel, OwnerType, OwnerResolver };
+module.exports = { OwnerModel, OwnerType };

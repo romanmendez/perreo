@@ -6,8 +6,9 @@ const Dog = new Schema(
   {
     name: { type: String, required: true },
     breed: { type: String, required: true },
-    sex: { type: Object, required: true },
-    vaccines: Object,
+    sex: { type: String, required: true },
+    dateOfBirth: { type: Date, required: true },
+    vaccines: { type: Object },
     fixed: { type: Boolean },
     heat: { type: Date },
     chip: { type: String },
@@ -21,14 +22,24 @@ const Dog = new Schema(
   }
 );
 
+const VaccineType = `
+  type Vaccine {
+    parvovirus: Date,
+    distemper: Date,
+    multipurpose: Date,
+    rabies: Date,
+  }
+`;
+
 const DogType = `
   type Dog {
     id: ID!
     name: String!
     breed: String!
     sex: String!
+    dateOfBirth: Date
     profilePic: String
-    vaccines: [String!]
+    vaccines: Vaccine
     fixed: Boolean
     heat: Date
     chip: String
@@ -80,4 +91,4 @@ const DogResolver = {
 };
 
 const DogModel = model("dog", Dog);
-module.exports = { DogModel, DogType, DogResolver };
+module.exports = { DogModel, DogType, VaccineType, DogResolver };

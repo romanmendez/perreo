@@ -1,5 +1,6 @@
 const {
   DogType,
+  VaccineType,
   DogMutationType,
   DogQueryType,
 } = require("../src/components/dog");
@@ -44,6 +45,7 @@ module.exports = `
     ${UserMutationType}
   }
   ${DogType}
+  ${VaccineType}
   ${AttendanceType}
   ${OwnerType}
   ${PassType}
