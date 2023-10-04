@@ -14,6 +14,7 @@ const Dog = new Schema(
     chip: { type: String },
     scan: String,
     owner: { type: Object, required: true },
+    passes: [{ type: Number }],
     notes: [String],
   },
   {
@@ -49,6 +50,7 @@ const DogType = `
     lastSeen: String
     weekDuration: String
     owner: Owner!
+    passes: [PassOwned!]
     notes: [String!]
   }
   `;
@@ -80,6 +82,9 @@ const DogResolver = {
       weekStartsOn: 1,
       locale: es,
     });
+  },
+  passes: (parent, args, context) => {
+    // TODO
   },
   profilePic: async (parent, args, context) => {
     return await context.utils.getProfilePic(`${parent.id}/profile`);
