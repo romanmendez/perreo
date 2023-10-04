@@ -3,9 +3,11 @@ const mongoose = require("mongoose");
 const { fakerES: faker } = require("@faker-js/faker");
 const { DogModel } = require("../src/components/dog");
 const { OwnerModel } = require("../src/components/owner");
+const { PassModel } = require("../src/components/pass");
 
 const dogs = [];
 const owners = [];
+const pass = [];
 
 // Create 50 owners
 for (let i = 0; i < 50; i++) {
@@ -54,6 +56,36 @@ for (let i = 0; i < 50; i++) {
   });
 }
 
+// Create 4 passes
+pass.push({
+  name: "Mensual Media Jornada",
+  totalDays: 30,
+  hoursPerDay: 4,
+  expiration: faker.date.soon({ days: 30 }),
+  price: 100,
+});
+pass.push({
+  name: "Mensual Jornada Completa",
+  totalDays: 30,
+  hoursPerDay: 8,
+  expiration: faker.date.soon({ days: 30 }),
+  price: 200,
+});
+pass.push({
+  name: "10 dias Media Jornada",
+  totalDays: 10,
+  hoursPerDay: 4,
+  expiration: faker.date.soon({ days: 30 }),
+  price: 20,
+});
+pass.push({
+  name: "10 dias Jornada Completa",
+  totalDays: 10,
+  hoursPerDay: 8,
+  expiration: faker.date.soon({ days: 30 }),
+  price: 50,
+});
+
 // Populate DB
 OwnerModel.deleteMany({}, () => console.log("Owners cleared")).then(() => {
   OwnerModel.create(owners)
@@ -69,6 +101,17 @@ DogModel.deleteMany({}, () => console.log("Dogs cleared")).then(() => {
   DogModel.create(dogs)
     .then((res) => {
       console.log(`Inserted ${res.length} dog records.`);
+      // mongoose.connection.close();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+PassModel.deleteMany({}, () => console.log("Passes cleared")).then(() => {
+  PassModel.create(pass)
+    .then((res) => {
+      console.log(`Inserted ${res.length} pass records.`);
       // mongoose.connection.close();
     })
     .catch((err) => {
