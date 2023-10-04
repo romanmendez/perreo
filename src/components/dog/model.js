@@ -13,7 +13,7 @@ const Dog = new Schema(
     heat: { type: Date },
     chip: { type: String },
     scan: String,
-    owners: [{ type: Schema.Types.ObjectId, ref: "owner" }],
+    owner: { type: Object, required: true },
     notes: [String],
   },
   {
@@ -48,7 +48,7 @@ const DogType = `
     lastAttendance: Attendance
     lastSeen: String
     weekDuration: String
-    owners: [Owner!]
+    owner: Owner!
     notes: [String!]
   }
   `;
@@ -59,10 +59,6 @@ const DogResolver = {
       dog: { _id: parent.id },
     });
     return attendances;
-  },
-  owners: async (parent, args, context) => {
-    const owners = await context.model.owner.find({ dogs: { _id: parent.id } });
-    return owners;
   },
   lastAttendance: async (parent, args, context) => {
     const attendances = await context.model.attendance.find({

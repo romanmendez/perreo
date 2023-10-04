@@ -13,7 +13,7 @@ for (let i = 0; i < 50; i++) {
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
-    phone: faker.phone.number(),
+    phone: [faker.phone.number()],
     dni:
       faker.string.numeric(8) +
       faker.string.alpha({ casing: "lower", length: 1 }),
@@ -29,7 +29,8 @@ for (let i = 0; i < 50; i++) {
   });
   const recentDate = faker.date.recent();
   const fixed = faker.datatype.boolean();
-  const owner = owners.pop();
+  const ownersCopy = [...owners];
+  const owner = ownersCopy.pop();
 
   dogs.push({
     name: faker.person.firstName(),
@@ -48,27 +49,29 @@ for (let i = 0; i < 50; i++) {
       : faker.date.between({ from: dateOfBirth, to: recentDate }),
     chip: faker.string.numeric(10),
     scan: faker.string.numeric(15),
-    owners: null,
+    owner,
     notes: faker.lorem.lines(1),
   });
 }
 
 // Populate DB
-OwnerModel.deleteMany({}, () => console.log("Owners cleared"));
-OwnerModel.create(owners)
-  .then((res) => {
-    console.log(`Inserted ${res.length} records.`);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+OwnerModel.deleteMany({}, () => console.log("Owners cleared")).then(() => {
+  OwnerModel.create(owners)
+    .then((res) => {
+      console.log(`Inserted ${res.length} owner records.`);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
-DogModel.deleteMany({}, () => console.log("Dogs cleared"));
-DogModel.create(dogs)
-  .then((res) => {
-    console.log(`Inserted ${res.length} records.`);
-    mongoose.connection.close();
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+DogModel.deleteMany({}, () => console.log("Dogs cleared")).then(() => {
+  DogModel.create(dogs)
+    .then((res) => {
+      console.log(`Inserted ${res.length} dog records.`);
+      // mongoose.connection.close();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
