@@ -6,7 +6,7 @@ const PassType = `
     name: String!
     totalDays: Int!
     hoursPerDay: Int!
-    experation: Date
+    expiration: Date
     price: Int!
   }
 `;
