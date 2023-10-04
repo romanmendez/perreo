@@ -4,7 +4,8 @@ const PassType = `
   type Pass {
     id: ID!
     name: String!
-    time: [Int!]
+    totalDays: Int!
+    hoursPerDay: Int!
     experation: Date
     price: Int!
   }
@@ -13,15 +14,16 @@ const PassOwnedType = `
   type PassOwned {
     id: ID!
     pass: Pass!
+    daysUsed: [Int]
     active: Boolean!
-    balance: [Int]
   }
 `;
 
 const Pass = new Schema(
   {
     name: { type: String, required: true },
-    time: [{ type: Number, required: true }],
+    totalDays: { type: Number, required: true },
+    hoursPerDay: { type: Number, required: true },
     expiration: { type: Date },
     price: { type: Number, required: true },
   },
@@ -31,8 +33,8 @@ const Pass = new Schema(
 );
 const PassOwned = new Schema({
   pass: { type: Schema.Types.ObjectId, ref: "pass" },
+  daysUsed: { type: Number, required: true },
   active: { type: Boolean, required: true },
-  balance: { type: Number },
 });
 
 const PassOwnedResolver = {
