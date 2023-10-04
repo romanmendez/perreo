@@ -4,28 +4,24 @@ const PassType = `
   type Pass {
     id: ID!
     name: String!
-    type: String!
-    days: Int!
-    hours: Int!
-    expiration: Date
+    time: [Int!]
+    experation: Date
     price: Int!
   }
 `;
 const PassOwnedType = `
   type PassOwned {
     id: ID!
-    owner: Owner!
     pass: Pass!
-    balance: Int
+    active: Boolean!
+    balance: [Int]
   }
 `;
 
 const Pass = new Schema(
   {
     name: { type: String, required: true },
-    type: { type: String, required: true },
-    days: { type: Number, required: true },
-    hours: { type: Number, required: true },
+    time: [{ type: Number, required: true }],
     expiration: { type: Date },
     price: { type: Number, required: true },
   },
@@ -34,18 +30,12 @@ const Pass = new Schema(
   }
 );
 const PassOwned = new Schema({
-  owner: { type: Schema.Types.ObjectId, ref: "owner" },
   pass: { type: Schema.Types.ObjectId, ref: "pass" },
+  active: { type: Boolean, required: true },
   balance: { type: Number },
 });
 
 const PassOwnedResolver = {
-  owner: async (parent, args, context) => {
-    const sale = await context.model.passOwned
-      .findById(parent.id)
-      .populate("owner");
-    return sale.owner;
-  },
   pass: async (parent, args, context) => {
     const sale = await context.model.passOwned
       .findById(parent.id)
