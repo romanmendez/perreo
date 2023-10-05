@@ -34,7 +34,7 @@ const PassMutationResolver = {
   usePass: async (parent, args, context) => {
     return await context.model.passOwned.findByIdAndUpdate(
       args.passId,
-      { $inc: { balance: -1 } },
+      { $inc: { daysUsed: +1 } },
       { returnOriginal: false }
     );
   },
