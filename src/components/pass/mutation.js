@@ -25,10 +25,10 @@ const PassMutationResolver = {
       daysUsed: 0,
       active: true,
     });
-    await dog.updateOne({
+    const dogUpdate = await dog.updateOne({
       $push: { passes: passOwned },
     });
-    console.log(passOwned);
+    console.log(passOwned, dogUpdate);
     return passOwned;
   },
   usePass: async (parent, args, context) => {
