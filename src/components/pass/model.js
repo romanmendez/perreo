@@ -14,7 +14,7 @@ const PassOwnedType = `
   type PassOwned {
     id: ID!
     pass: Pass!
-    daysUsed: [Int]
+    daysUsed: Int
     active: Boolean!
   }
 `;

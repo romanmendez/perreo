@@ -14,7 +14,7 @@ const Dog = new Schema(
     chip: { type: String },
     scan: String,
     owner: { type: Object, required: true },
-    passes: [{ type: Number }],
+    passes: [{ type: Object }],
     notes: [String],
   },
   {
@@ -83,8 +83,25 @@ const DogResolver = {
       locale: es,
     });
   },
-  passes: (parent, args, context) => {
-    // TODO
+  passes: async (parent, args, context) => {
+    const passOwnedIds = parent.passes.map((passOwned) => passOwned.pass);
+    const passes = await context.model.pass.find({
+      _id: { $in: passOwnedIds },
+    });
+    // Map the found passes back to the PassOwned structure.
+    const mappedPasses = parent.passes.map((passOwned) => {
+      const correspondingPass = passes.find(
+        (pass) => String(pass._id) === String(passOwned.pass)
+      );
+      console.log(passOwned, correspondingPass);
+      return {
+        ...passOwned, // Includes all existing PassOwned fields
+        id: passOwned._id,
+        pass: correspondingPass, // Embeds the actual Pass object
+      };
+    });
+    console.log(mappedPasses);
+    return mappedPasses;
   },
   profilePic: async (parent, args, context) => {
     return await context.utils.getProfilePic(`${parent.id}/profile`);
