@@ -32,17 +32,18 @@ const Pass = new Schema(
   }
 );
 const PassOwned = new Schema({
-  pass: { type: Schema.Types.ObjectId, ref: "pass" },
+  pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
   daysUsed: { type: Number, required: true },
   active: { type: Boolean, required: true },
 });
 
 const PassOwnedResolver = {
   pass: async (parent, args, context) => {
-    const sale = await context.model.passOwned
-      .findById(parent.id)
-      .populate("pass");
-    return sale.pass;
+    const pass = await context.model.pass.findOne({
+      _id: parent.pass,
+    });
+    console.log("PassOwnedResolver:", pass);
+    return pass;
   },
 };
 
