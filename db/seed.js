@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const { fakerES: faker } = require("@faker-js/faker");
 const { DogModel } = require("../src/components/dog");
 const { OwnerModel } = require("../src/components/owner");
-const { PassModel } = require("../src/components/pass");
+const { PassModel, PassOwnedModel } = require("../src/components/pass");
 
 const dogs = [];
 const owners = [];
@@ -87,34 +87,17 @@ pass.push({
 });
 
 // Populate DB
-OwnerModel.deleteMany({}, () => console.log("Owners cleared")).then(() => {
-  OwnerModel.create(owners)
-    .then((res) => {
-      console.log(`Inserted ${res.length} owner records.`);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-DogModel.deleteMany({}, () => console.log("Dogs cleared")).then(() => {
-  DogModel.create(dogs)
-    .then((res) => {
-      console.log(`Inserted ${res.length} dog records.`);
-      // mongoose.connection.close();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-PassModel.deleteMany({}, () => console.log("Passes cleared")).then(() => {
-  PassModel.create(pass)
-    .then((res) => {
-      console.log(`Inserted ${res.length} pass records.`);
-      // mongoose.connection.close();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+OwnerModel.deleteMany({}, () => console.log("Owners cleared"))
+  .then(() => OwnerModel.create(owners))
+  .then((res) => console.log(`Inserted ${res.length} owner records.`))
+  .then(() => DogModel.deleteMany({}, () => console.log("Dogs cleared")))
+  .then(() => DogModel.create(dogs))
+  .then((res) => console.log(`Inserted ${res.length} dog records.`))
+  .then(() => PassModel.deleteMany({}, () => console.log("Passes cleared")))
+  .then(() => PassModel.create(pass))
+  .then((res) => console.log(`Inserted ${res.length} pass records.`))
+  .then(() =>
+    PassOwnedModel.deleteMany({}, () => console.log("PassesOwned cleared"))
+  )
+  .then(() => mongoose.connection.close())
+  .catch((err) => console.log(err));
