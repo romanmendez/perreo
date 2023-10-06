@@ -45,10 +45,6 @@ const DogType = `
     heat: Date
     chip: String
     scan: String
-    attendances: [Attendance!]
-    lastAttendance: Attendance
-    lastSeen: String
-    weekDuration: String
     owner: Owner!
     passes: [PassOwned!]
     notes: [String!]
@@ -56,33 +52,6 @@ const DogType = `
   `;
 
 const DogResolver = {
-  attendances: async (parent, args, context) => {
-    const attendances = await context.model.attendance.find({
-      dog: { _id: parent.id },
-    });
-    return attendances;
-  },
-  lastAttendance: async (parent, args, context) => {
-    const attendances = await context.model.attendance.find({
-      dog: { _id: parent.id },
-    });
-    if (!attendances.length) return null;
-
-    return attendances.sort((a, b) => b.start.getTime() - a.start.getTime())[0];
-  },
-  lastSeen: async (parent, args, context) => {
-    const lastAttendance = await DogResolver.lastAttendance(
-      parent,
-      args,
-      context
-    );
-    if (!lastAttendance) return null;
-    if (!lastAttendance.end) return "active";
-    return formatRelative(lastAttendance.end, new Date(), {
-      weekStartsOn: 1,
-      locale: es,
-    });
-  },
   passes: async (parent, args, context) => {
     const passes = await context.model.passOwned.find({
       _id: parent.passes,
