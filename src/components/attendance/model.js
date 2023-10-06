@@ -41,9 +41,7 @@ const AttendanceResolver = {
   },
   totalTime: async (parent, args, context) => {
     const att = await context.model.attendance.findById(parent.id);
-    const { hours, minutes } = context.utils.duration(att);
-
-    return `${hours}:${minutes}`;
+    return context.utils.duration(att);
   },
 };
 
