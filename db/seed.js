@@ -9,8 +9,8 @@ const { AttendanceModel } = require("../src/components/attendance");
 async function seed() {
   const dogs = [];
   const owners = [];
-  const pass = [];
-  const passOwned = [];
+  const passes = [];
+  const passesOwned = [];
 
   // Create 50 owners
   for (let i = 0; i < 50; i++) {
@@ -27,29 +27,29 @@ async function seed() {
 
   // populate DB with owners
   const createdOwners = await populate("owners", OwnerModel, owners);
-  // create an array of IDs from the created owners to pass to the dogs
+  // create an array of IDs from the created owners to passes to the dogs
   const createdOwnersIds = createdOwners.map((owner) => owner._id);
 
   // Create 4 passes
-  pass.push({
+  passes.push({
     name: "Mensual Media Jornada",
     totalDays: 30,
     hoursPerDay: 4,
     price: 100,
   });
-  pass.push({
+  passes.push({
     name: "Mensual Jornada Completa",
     totalDays: 30,
     hoursPerDay: 8,
     price: 200,
   });
-  pass.push({
+  passes.push({
     name: "10 dias Media Jornada",
     totalDays: 10,
     hoursPerDay: 4,
     price: 20,
   });
-  pass.push({
+  passes.push({
     name: "10 dias Jornada Completa",
     totalDays: 10,
     hoursPerDay: 8,
@@ -57,16 +57,16 @@ async function seed() {
   });
 
   // populate DB with passes
-  const createdPasses = await populate("passes", PassModel, pass);
+  const createdPasses = await populate("passes", PassModel, passes);
 
-  // create 30 passOwned for dogs
+  // create 30 passesOwned for dogs
   for (let i = 0; i < 30; i++) {
-    const randomPass = createdPasses[Math.floor(Math.random() * pass.length)];
+    const randomPass = createdPasses[Math.floor(Math.random() * passes.length)];
 
-    passOwned.push({
+    passesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
-      expiration: faker.date.soon(randomPass.totalDays),
+      expiration: faker.date.soon({ days: randomPass.totalDays }),
       active: true,
     });
   }
@@ -75,7 +75,7 @@ async function seed() {
   const createdPassesOwned = await populate(
     "passes_owned",
     PassOwnedModel,
-    passOwned
+    passesOwned
   );
   // get ID
   const createdPassesOwnedIds = createdPassesOwned.map(
@@ -94,6 +94,8 @@ async function seed() {
     const ownersCopy = [...owners];
     const owner = createdOwnersIds.pop();
     const pass = createdPassesOwnedIds.pop();
+
+    console.log("pass", pass);
 
     dogs.push({
       name: faker.person.firstName(),
@@ -114,9 +116,11 @@ async function seed() {
       scan: faker.string.numeric(15),
       owner,
       notes: faker.lorem.lines(1),
-      pass,
+      passes: pass ? pass : [],
     });
   }
+
+  console.log(dogs);
 
   // populate DB with dogs
   const createdDogs = await populate("dogs", DogModel, dogs);
