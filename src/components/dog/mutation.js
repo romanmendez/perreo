@@ -19,7 +19,7 @@ const DogMutationType = `
     name: String
     breed: String
     sex: String
-    vaccines: [String!]
+    vaccines: [String]
     profilePic: String
     fixed: Boolean
     heat: Date
