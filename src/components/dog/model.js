@@ -46,15 +46,24 @@ const DogType = `
     chip: String
     scan: String
     owner: Owner!
-    passes: [PassOwned!]
+    usedPasses: [PassOwned]
+    activePasses: [PassOwned]
     notes: [String!]
   }
   `;
 
 const DogResolver = {
-  passes: async (parent, args, context) => {
+  usedPasses: async (parent, args, context) => {
     const passes = await context.model.passOwned.find({
       _id: parent.passes,
+      active: false,
+    });
+    return passes;
+  },
+  activePasses: async (parent, args, context) => {
+    const passes = await context.model.passOwned.find({
+      _id: parent.passes,
+      active: true,
     });
     return passes;
   },
