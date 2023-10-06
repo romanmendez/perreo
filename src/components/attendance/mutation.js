@@ -11,6 +11,16 @@ const AttendanceMutationType = `
 
 const AttendanceMutationResolver = {
   startAttendance: async (parent, args, context) => {
+    // check to see if dog has already checked in
+    const existingAttendance = await context.model.attendance.findOne({
+      dog: args.dogId,
+      end: null,
+    });
+
+    if (existingAttendance)
+      throw new Error("This dog already has an active attendance.");
+
+    // create new chekin
     const start = new Date();
 
     return await context.model.attendance.create({
