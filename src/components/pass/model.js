@@ -6,7 +6,6 @@ const PassType = `
     name: String!
     totalDays: Int!
     hoursPerDay: Int!
-    expiration: Date
     price: Int!
   }
 `;
@@ -15,6 +14,7 @@ const PassOwnedType = `
     id: ID!
     pass: Pass!
     daysUsed: Int
+    expiration: Date
     active: Boolean!
   }
 `;
@@ -24,7 +24,6 @@ const Pass = new Schema(
     name: { type: String, required: true },
     totalDays: { type: Number, required: true },
     hoursPerDay: { type: Number, required: true },
-    expiration: { type: Date },
     price: { type: Number, required: true },
   },
   {
@@ -34,6 +33,7 @@ const Pass = new Schema(
 const PassOwned = new Schema({
   pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
   daysUsed: { type: Number, required: true },
+  expiration: { type: Date },
   active: { type: Boolean, required: true },
 });
 
