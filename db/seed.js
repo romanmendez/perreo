@@ -4,6 +4,7 @@ const { fakerES: faker } = require("@faker-js/faker");
 const { DogModel } = require("../src/components/dog");
 const { OwnerModel } = require("../src/components/owner");
 const { PassModel, PassOwnedModel } = require("../src/components/pass");
+const { AttendanceModel } = require("../src/components/attendance");
 
 async function seed() {
   const dogs = [];
@@ -97,6 +98,9 @@ async function seed() {
 
   // populate DB with passes
   const createdPasses = await populate("passes owned", PassModel, pass);
+  await AttendanceModel.deleteMany({}, () =>
+    console.log("Attendances cleared")
+  );
 }
 
 // populate DB function
