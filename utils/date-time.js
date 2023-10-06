@@ -7,7 +7,13 @@ function daysBetween(start, end) {
 function duration(attendance) {
   const start = DateTime.fromJSDate(attendance.start);
   const end = DateTime.fromJSDate(attendance.end || new Date());
-  return end.diff(start, ["hours", "minutes"]).toObject();
+  const diff = end.diff(start, ["hours", "minutes"]).toObject();
+
+  // Rounding off the minutes and hours
+  diff.hours = Math.round(diff.hours);
+  diff.minutes = Math.round(diff.minutes);
+
+  return diff;
 }
 
 function timeFromNow(number, period) {
