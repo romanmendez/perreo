@@ -1,4 +1,5 @@
 const { GraphQLScalarType } = require("graphql");
+const { format } = require("date-fns");
 const { Kind } = require("graphql/language");
 const {
   DogResolver: Dog,
@@ -47,11 +48,21 @@ module.exports = {
   Date: new GraphQLScalarType({
     name: "Date",
     description: "Date custom scalar type",
+    // value from client
     parseValue(value) {
-      return new Date(value); // value from the client
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        throw new Error("Invalid date");
+      }
+      return date;
     },
+
+    // value to client
     serialize(value) {
-      return value.getTime(); // value sent to the client
+      if (!(value instanceof Date) || isNaN(value.getTime())) {
+        throw new Error("Invalid date");
+      }
+      return format(value, "dd/MM/yyyy");
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.INT) {
