@@ -71,9 +71,12 @@ module.exports = {
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.STRING) {
-        console.log("inside if", ast);
-        const dt = DateTime.fromFormat(ast.value, "dd/MM/yyyy");
-        console.log("after format", dt);
+        let dt;
+        if (ast.value.includes(" ")) {
+          dt = DateTime.fromFormat(ast.value, "dd/MM/yyyy HH:mm");
+        } else {
+          dt = DateTime.fromFormat(ast.value, "dd/MM/yyyy");
+        }
         if (!dt.isValid) {
           throw new Error("Invalid date");
         }
