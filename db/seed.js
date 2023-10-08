@@ -12,7 +12,7 @@ async function seed() {
   const passes = [];
   const passesOwned = [];
 
-  // Create 50 owners
+  // OWNERS: Create
   for (let i = 0; i < 5; i++) {
     owners.push({
       firstName: faker.person.firstName(),
@@ -25,12 +25,11 @@ async function seed() {
     });
   }
 
-  // populate DB with owners
+  // OWNERS: Populate
   const createdOwners = await populate("owners", OwnerModel, owners);
-  // create an array of IDs from the created owners to passes to the dogs
   const createdOwnersIds = createdOwners.map((owner) => owner._id);
 
-  // Create 4 passes
+  // PASSES: Create
   passes.push({
     name: "Mensual Media Jornada",
     totalDays: 30,
@@ -56,10 +55,10 @@ async function seed() {
     price: 50,
   });
 
-  // populate DB with passes
+  // PASSES: Populate
   const createdPasses = await populate("passes", PassModel, passes);
 
-  // create 30 passesOwned for dogs
+  // PASSESOWNED: Create
   for (let i = 0; i < 3; i++) {
     const randomPass = createdPasses[Math.floor(Math.random() * passes.length)];
 
@@ -71,18 +70,17 @@ async function seed() {
     });
   }
 
-  // populate DB with passesOwned
+  // PASSESOWNED: Populate
   const createdPassesOwned = await populate(
     "passes_owned",
     PassOwnedModel,
     passesOwned
   );
-  // get ID
   const createdPassesOwnedIds = createdPassesOwned.map(
     (createdPass) => createdPass._id
   );
 
-  // Create 50 fake dogs
+  // DOGS: Create
   for (let i = 0; i < 5; i++) {
     const dateOfBirth = faker.date.birthdate({
       min: 2010,
@@ -115,6 +113,7 @@ async function seed() {
       owner,
       notes: faker.lorem.lines(1),
       passes: pass ? pass : [],
+      active: true,
     });
   }
 
