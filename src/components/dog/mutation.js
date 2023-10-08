@@ -1,32 +1,8 @@
 const { updateResolver } = require("../../../graphql/defaults");
 
 const DogMutationType = `
-  createDog(
-    name: String!
-    breed: String!
-    sex: String!
-    ownerId: String!
-    vaccines: [String!]
-    profilePic: String
-    fixed: Boolean
-    heat: Date
-    chip: String
-    scan: String
-    note: String
-  ): Dog!
-  updateDog(
-    id: String!
-    name: String
-    breed: String
-    sex: String
-    vaccines: [String]
-    profilePic: String
-    fixed: Boolean
-    heat: Date
-    chip: String
-    scan: String
-    note: String
-  ): Dog!
+  createDog(input: DogInput!): Dog!
+  updateDog(id: ID!, input: DogInput): Dog!
   addOwnerToDog(dogId: String!, ownerId: String!): Dog!
 `;
 const DogMutationResolver = {

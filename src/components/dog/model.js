@@ -23,34 +23,67 @@ const Dog = new Schema(
   }
 );
 
+const vaccineFields = `
+  name: String!
+  dateAdministered: Date!
+  nextDue: Date
+`;
 const VaccineType = `
   type Vaccine {
-    parvovirus: Date,
-    distemper: Date,
-    multipurpose: Date,
-    rabies: Date,
+    ${vaccineFields}
   }
+`;
+const VaccineInputType = `
+  input VaccineInput {
+    ${vaccineFields}
+  }
+`;
+const noteFields = `
+  color: String!
+  text: String!
+  active: Boolean!
+`;
+const NoteType = `
+  type Note {
+    ${noteFields}
+  }
+`;
+const NoteInputType = `
+  input NoteInput {
+    ${noteFields}
+  }
+`;
+const dogFields = `
+  name: String
+  breed: String
+  sex: String
+  dateOfBirth: Date
+  profilePic: String
+  fixed: Boolean
+  heat: Date
+  chip: String
+  scan: String
 `;
 
 const DogType = `
   type Dog {
     id: ID!
-    name: String!
-    breed: String!
-    sex: String!
-    dateOfBirth: Date
-    profilePic: String
-    vaccines: Vaccine
-    fixed: Boolean
-    heat: Date
-    chip: String
-    scan: String
+    ${dogFields}
+    notes: [Note]
+    vaccines: [Vaccine]
     owner: Owner!
     usedPasses: [PassOwned]
     activePasses: [PassOwned]
-    notes: [String!]
   }
   `;
+
+const DogInputType = `
+   input DogInput {
+    ${dogFields}
+    note: NoteInput
+    vaccine: VaccineInput
+   }
+`;
 
 const DogResolver = {
   usedPasses: async (parent, args, context) => {
@@ -76,4 +109,13 @@ const DogResolver = {
 };
 
 const DogModel = model("dog", Dog);
-module.exports = { DogModel, DogType, VaccineType, DogResolver };
+module.exports = {
+  DogModel,
+  DogType,
+  DogInputType,
+  VaccineType,
+  VaccineInputType,
+  NoteType,
+  NoteInputType,
+  DogResolver,
+};

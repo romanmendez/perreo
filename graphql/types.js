@@ -1,6 +1,10 @@
 const {
   DogType,
+  DogInputType,
   VaccineType,
+  VaccineInputType,
+  NoteType,
+  NoteInputType,
   DogMutationType,
   DogQueryType,
 } = require("../src/components/dog");
@@ -32,6 +36,9 @@ const {
 module.exports = `
   scalar Date
   ${OwnerQueryFilterType}
+  ${DogInputType}
+  ${NoteInputType}
+  ${VaccineInputType}
   type Query {
     ${DogQueryType}
     ${AttendanceQueryType}
@@ -48,6 +55,7 @@ module.exports = `
   }
   ${DogType}
   ${VaccineType}
+  ${NoteType}
   ${AttendanceType}
   ${OwnerType}
   ${PassType}
