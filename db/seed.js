@@ -13,7 +13,7 @@ async function seed() {
   const passesOwned = [];
 
   // Create 50 owners
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 5; i++) {
     owners.push({
       firstName: faker.person.firstName(),
       lastName: faker.person.lastName(),
@@ -60,7 +60,7 @@ async function seed() {
   const createdPasses = await populate("passes", PassModel, passes);
 
   // create 30 passesOwned for dogs
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 3; i++) {
     const randomPass = createdPasses[Math.floor(Math.random() * passes.length)];
 
     passesOwned.push({
@@ -83,7 +83,7 @@ async function seed() {
   );
 
   // Create 50 fake dogs
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 5; i++) {
     const dateOfBirth = faker.date.birthdate({
       min: 2010,
       max: 2022,
@@ -94,8 +94,6 @@ async function seed() {
     const ownersCopy = [...owners];
     const owner = createdOwnersIds.pop();
     const pass = createdPassesOwnedIds.pop();
-
-    console.log("pass", pass);
 
     dogs.push({
       name: faker.person.firstName(),
@@ -119,8 +117,6 @@ async function seed() {
       passes: pass ? pass : [],
     });
   }
-
-  console.log(dogs);
 
   // populate DB with dogs
   const createdDogs = await populate("dogs", DogModel, dogs);
