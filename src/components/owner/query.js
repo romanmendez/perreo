@@ -15,9 +15,9 @@ const OwnerQueryFilterType = `
 const OwnerQueryResolver = {
   owners: async (parent, args, context) => {
     const query = {};
-    const { id, firstName, lastName, dni } = args.filter;
-
     if (args.filter) {
+      const { id, firstName, lastName, dni } = args.filter;
+
       if (id) query._id = id;
       if (firstName) query.firstName = firstName;
       if (lastName) query.lastName = lastName;
