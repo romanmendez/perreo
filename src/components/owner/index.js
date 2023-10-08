@@ -1,4 +1,4 @@
-const { OwnerModel, OwnerType } = require("./model");
+const { OwnerModel, OwnerType, OwnerResolver } = require("./model");
 const { OwnerQueryType, OwnerQueryResolver } = require("./query");
 const { OwnerMutationType, OwnerMutationResolver } = require("./mutation");
 
@@ -9,4 +9,5 @@ module.exports = {
   OwnerMutationResolver,
   OwnerModel,
   OwnerType,
+  OwnerResolver,
 };

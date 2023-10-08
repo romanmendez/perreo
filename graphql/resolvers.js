@@ -17,6 +17,7 @@ const {
   PassMutationResolver,
 } = require("../src/components/pass");
 const {
+  OwnerResolver: Owner,
   OwnerMutationResolver,
   OwnerQueryResolver,
 } = require("../src/components/owner");
@@ -42,6 +43,7 @@ module.exports = {
     ...UserMutationResolver,
   },
   Dog,
+  Owner,
   Attendance,
   PassOwned,
   User,
