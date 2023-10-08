@@ -42,7 +42,6 @@ const PassOwnedResolver = {
     const pass = await context.model.pass.findOne({
       _id: parent.pass,
     });
-    console.log("PassOwnedResolver:", pass);
     return pass;
   },
 };
