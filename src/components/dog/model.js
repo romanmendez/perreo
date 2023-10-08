@@ -80,6 +80,7 @@ const DogType = `
 const DogInputType = `
    input DogInput {
     ${dogFields}
+    owner: String
     note: NoteInput
     vaccine: VaccineInput
    }
