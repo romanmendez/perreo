@@ -8,9 +8,11 @@ function duration(attendance) {
   const start = DateTime.fromJSDate(attendance.start);
   const end = DateTime.fromJSDate(attendance.end || new Date());
   const diff = end.diff(start, ["hours", "minutes"]);
-  console.log(diff.toFormat("hh:mm"));
-  const formattedDuration = diff.toFormat("hh:mm");
-  return formattedDuration;
+
+  const hours = String(Math.floor(diff.hours)).padStart(2, "0");
+  const minutes = String(Math.floor(diff.minutes) % 60).padStart(2, "0");
+
+  return { hours, minutes };
 }
 
 function timeFromNow(number, period) {
