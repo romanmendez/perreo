@@ -3,9 +3,8 @@ const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
   endAttendance(dogId: String!): Attendance!
-  createAttendance(dogId: String!, startDate: Date!, endDate: Date!): Attendance!
+  createAttendance(dogId: String!, start: Date!, end: Date!): Attendance!
   updateAttendance(id: String!, start: Date, end: Date): Attendance!
-  closeAttendance(id: String!, passOwnedId: String!): Attendance!
   deleteAttendance(id: String!): Int!
 `;
 
@@ -40,11 +39,9 @@ const AttendanceMutationResolver = {
     return attendance;
   },
   createAttendance: async (parent, args, context) => {
-    const dog = await context.model.dog.findById(args.dogId);
     return await context.model.attendance.create({
-      start: args.startDate,
-      end: args.endDate,
-      dog,
+      dog: args.dogId,
+      ...args,
     });
   },
   updateAttendance: async (parent, args, context) =>

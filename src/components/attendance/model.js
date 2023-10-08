@@ -8,7 +8,7 @@ const Attendance = new Schema(
     start: { type: Date, required: true },
     end: { type: Date },
     payment: { type: Schema.Types.ObjectId, ref: "pass" },
-    balance: { type: Number, required: true },
+    balance: { type: Number },
   },
   {
     timestamps: true,
@@ -23,7 +23,7 @@ const AttendanceType = `
       end: String
       totalTime: String!
       payment: Pass
-      balance: Int!
+      balance: Int
     }
   `;
 
