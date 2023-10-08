@@ -71,7 +71,7 @@ const DogType = `
     ${dogFields}
     notes: [Note]
     vaccines: [Vaccine]
-    owner: Owner!
+    owner: Owner
     usedPasses: [PassOwned]
     activePasses: [PassOwned]
   }
