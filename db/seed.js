@@ -5,12 +5,14 @@ const { DogModel } = require("../src/components/dog");
 const { OwnerModel } = require("../src/components/owner");
 const { PassModel, PassOwnedModel } = require("../src/components/pass");
 const { AttendanceModel } = require("../src/components/attendance");
+const { PriceModel } = require("../src/components/price");
 
 async function seed() {
   const dogs = [];
   const owners = [];
   const passes = [];
   const passesOwned = [];
+  const price = [];
 
   // OWNERS: Create
   for (let i = 0; i < 5; i++) {
@@ -117,12 +119,21 @@ async function seed() {
     });
   }
 
-  // populate DB with dogs
+  // DOGS: Populate
   const createdDogs = await populate("dogs", DogModel, dogs);
 
   await AttendanceModel.deleteMany({}, () =>
     console.log("Attendances cleared")
   );
+
+  // PRICE: Create
+  price.push({
+    name: "hour",
+    price: 10,
+  });
+
+  // PRICE: Populate
+  await populate("price", PriceModel, price);
 }
 
 // populate DB function
