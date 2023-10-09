@@ -1,6 +1,7 @@
 require("./config");
 const mongoose = require("mongoose");
 const { fakerES: faker } = require("@faker-js/faker");
+const { DateTime } = require("luxon");
 const { DogModel } = require("../src/components/dog");
 const { OwnerModel } = require("../src/components/owner");
 const { PassModel, PassOwnedModel } = require("../src/components/pass");
@@ -67,7 +68,8 @@ async function seed() {
     passesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
-      expiration: faker.date.soon({ days: randomPass.totalDays }),
+      purchaseDate: faker.date.soon({ days: randomPass.totalDays }),
+      expirationDate: faker.date.soon({ days: 30, refDate: this.purchaseDate }),
       active: true,
     });
   }
