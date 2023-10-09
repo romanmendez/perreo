@@ -44,6 +44,15 @@ const AttendanceResolver = {
     const { hours, minutes } = context.utils.duration(att);
     return `${hours}:${minutes}`;
   },
+  balance: async (parent, args, context) => {
+    const att = await context.model.attendance.findById(parent.id);
+    const { price } = await context.model.price.findOne({ name: "hour" });
+
+    const { hours, minutes } = context.utils.duration(att);
+    const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
+
+    return Math.floor((attendanceTimeInMinutes / 60) * price);
+  },
 };
 
 const AttendanceModel = model("attendance", Attendance);
