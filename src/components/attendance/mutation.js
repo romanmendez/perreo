@@ -60,7 +60,7 @@ const AttendanceMutationResolver = {
         if (timeCoveredByPass >= 0) {
           return await updateResolver(
             "attendance",
-            { id: args.id, balance: 0 },
+            { id: args.id, balance: 0, passUsed: args.passOwnedId },
             context
           );
         } else {

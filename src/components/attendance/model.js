@@ -31,7 +31,7 @@ const AttendanceType = `
       start: String!
       end: String
       totalTime: String!
-      passUsed: Pass
+      passUsed: PassOwned
       payment: Payment
       balance: Int
     }
