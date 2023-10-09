@@ -1,4 +1,6 @@
 const { GraphQLScalarType } = require("graphql");
+const { format } = require("date-fns");
+const { DateTime } = require("luxon");
 const { Kind } = require("graphql/language");
 const {
   DogResolver: Dog,
@@ -16,6 +18,7 @@ const {
   PassMutationResolver,
 } = require("../src/components/pass");
 const {
+  OwnerResolver: Owner,
   OwnerMutationResolver,
   OwnerQueryResolver,
 } = require("../src/components/owner");
@@ -41,21 +44,43 @@ module.exports = {
     ...UserMutationResolver,
   },
   Dog,
+  Owner,
   Attendance,
   PassOwned,
   User,
   Date: new GraphQLScalarType({
     name: "Date",
     description: "Date custom scalar type",
+    // value from client
     parseValue(value) {
-      return new Date(value); // value from the client
+      console.log("date parser", value);
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        throw new Error("Invalid date");
+      }
+      return date;
     },
+
+    // value to client
     serialize(value) {
-      return value.getTime(); // value sent to the client
+      console.log("date parser", value);
+      if (!(value instanceof Date) || isNaN(value.getTime())) {
+        throw new Error("Invalid date");
+      }
+      return format(value, "dd/MM/yyyy");
     },
     parseLiteral(ast) {
-      if (ast.kind === Kind.INT) {
-        return new Date(parseInt(ast.value, 10)); // ast value is always in string format
+      if (ast.kind === Kind.STRING) {
+        let dt;
+        if (ast.value.includes(" ")) {
+          dt = DateTime.fromFormat(ast.value, "dd/MM/yyyy HH:mm");
+        } else {
+          dt = DateTime.fromFormat(ast.value, "dd/MM/yyyy");
+        }
+        if (!dt.isValid) {
+          throw new Error("Invalid date");
+        }
+        return dt.toJSDate(); // convert it back to a native JavaScript Date
       }
       return null;
     },

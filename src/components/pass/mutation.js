@@ -3,67 +3,38 @@ const formatDuration = require("date-fns/formatDuration");
 const PassMutationType = `
   createPass(
     name: String!
-    type: String!
-    days: Int
-    hours: Int!
-    expiration: Date
+    totalDays: Int
+    hoursPerDay: Int!
     price: Int!
+    expiration: Date
   ): Pass!
-  sellPass(passId: String!, ownerId: String!): Owner!
+  sellPass(passId: String!, dogId: String!): PassOwned!
   usePass(passId: String!): PassOwned!
 `;
 
 const PassMutationResolver = {
   createPass: async (parent, args, context) => {
-    const { name, type, days, hours, expiration, price } = args;
-
-    switch (type) {
-      case "pack":
-        if (!days)
-          throw new Error(
-            "Please provide the number of days this pack will last."
-          );
-        return await context.model.pass.create({
-          name,
-          type,
-          days,
-          hours,
-          price,
-        });
-      case "subscription":
-        if (!expiration)
-          throw new Error(
-            "You need to provide an expiration date for subscriptions."
-          );
-        return await context.model.pass.create({
-          name,
-          type,
-          expiration,
-          hours,
-          price,
-        });
-      default:
-        throw new Error("Unexpected pass type.");
-    }
+    return await context.model.pass.create(args);
   },
   sellPass: async (parent, args, context) => {
-    const owner = await context.model.owner.findById(args.ownerId);
+    const dog = await context.model.dog.findById(args.dogId);
     const pass = await context.model.pass.findById(args.passId);
 
-    const sale = await context.model.passOwned.create({
-      owner,
+    const passOwned = await context.model.passOwned.create({
       pass,
-      balance: pass.type === "pack" ? pass.days : null,
+      daysUsed: 0,
+      active: true,
     });
-    await owner.updateOne({
-      $push: { passes: sale },
+    const dogUpdate = await dog.updateOne({
+      $push: { passes: passOwned },
     });
-    return sale;
+    console.log(passOwned, dogUpdate);
+    return passOwned;
   },
   usePass: async (parent, args, context) => {
     return await context.model.passOwned.findByIdAndUpdate(
       args.passId,
-      { $inc: { balance: -1 } },
+      { $inc: { daysUsed: +1 } },
       { returnOriginal: false }
     );
   },

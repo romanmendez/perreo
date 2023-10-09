@@ -8,7 +8,7 @@ async function updateResolver(model, args, context) {
 }
 
 async function deleteResolver(model, args, context) {
-  const { ok } = await context.model.attendance.deleteOne({ _id: args.id });
+  const { ok } = await context.model[model].deleteOne({ _id: args.id });
   return ok;
 }
 

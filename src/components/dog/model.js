@@ -13,8 +13,10 @@ const Dog = new Schema(
     heat: { type: Date },
     chip: { type: String },
     scan: String,
-    owners: [{ type: Schema.Types.ObjectId, ref: "owner" }],
+    owner: { type: Schema.Types.ObjectId, ref: "owner" },
+    passes: [{ type: Schema.Types.ObjectId, ref: "pass_owned" }],
     notes: [String],
+    active: { type: Boolean, required: true },
   },
   {
     timestamps: true,
@@ -22,68 +24,86 @@ const Dog = new Schema(
   }
 );
 
+const vaccineFields = `
+  name: String!
+  dateAdministered: Date!
+  nextDue: Date
+`;
 const VaccineType = `
   type Vaccine {
-    parvovirus: Date,
-    distemper: Date,
-    multipurpose: Date,
-    rabies: Date,
+    ${vaccineFields}
   }
+`;
+const VaccineInputType = `
+  input VaccineInput {
+    ${vaccineFields}
+  }
+`;
+const noteFields = `
+  color: String!
+  text: String!
+  active: Boolean!
+`;
+const NoteType = `
+  type Note {
+    ${noteFields}
+  }
+`;
+const NoteInputType = `
+  input NoteInput {
+    ${noteFields}
+  }
+`;
+const dogFields = `
+  name: String
+  breed: String
+  sex: String
+  dateOfBirth: Date
+  profilePic: String
+  fixed: Boolean
+  heat: Date
+  chip: String
+  scan: String
 `;
 
 const DogType = `
   type Dog {
     id: ID!
-    name: String!
-    breed: String!
-    sex: String!
-    dateOfBirth: Date
-    profilePic: String
-    vaccines: Vaccine
-    fixed: Boolean
-    heat: Date
-    chip: String
-    scan: String
-    attendances: [Attendance!]
-    lastAttendance: Attendance
-    lastSeen: String
-    weekDuration: String
-    owners: [Owner!]
-    notes: [String!]
+    ${dogFields}
+    notes: [Note]
+    vaccines: [Vaccine]
+    owner: Owner
+    usedPasses: [PassOwned]
+    activePasses: [PassOwned]
   }
   `;
 
-const DogResolver = {
-  attendances: async (parent, args, context) => {
-    const attendances = await context.model.attendance.find({
-      dog: { _id: parent.id },
-    });
-    return attendances;
-  },
-  owners: async (parent, args, context) => {
-    const owners = await context.model.owner.find({ dogs: { _id: parent.id } });
-    return owners;
-  },
-  lastAttendance: async (parent, args, context) => {
-    const attendances = await context.model.attendance.find({
-      dog: { _id: parent.id },
-    });
-    if (!attendances.length) return null;
+const DogInputType = `
+   input DogInput {
+    ${dogFields}
+    owner: String
+    note: NoteInput
+    vaccine: VaccineInput
+   }
+`;
 
-    return attendances.sort((a, b) => b.start.getTime() - a.start.getTime())[0];
-  },
-  lastSeen: async (parent, args, context) => {
-    const lastAttendance = await DogResolver.lastAttendance(
-      parent,
-      args,
-      context
-    );
-    if (!lastAttendance) return null;
-    if (!lastAttendance.end) return "active";
-    return formatRelative(lastAttendance.end, new Date(), {
-      weekStartsOn: 1,
-      locale: es,
+const DogResolver = {
+  usedPasses: async (parent, args, context) => {
+    const passes = await context.model.passOwned.find({
+      _id: parent.passes,
+      active: false,
     });
+    return passes;
+  },
+  activePasses: async (parent, args, context) => {
+    const passes = await context.model.passOwned.find({
+      _id: parent.passes,
+      active: true,
+    });
+    return passes;
+  },
+  owner: async (parent, args, context) => {
+    return await context.model.owner.findById(parent.owner);
   },
   profilePic: async (parent, args, context) => {
     return await context.utils.getProfilePic(`${parent.id}/profile`);
@@ -91,4 +111,13 @@ const DogResolver = {
 };
 
 const DogModel = model("dog", Dog);
-module.exports = { DogModel, DogType, VaccineType, DogResolver };
+module.exports = {
+  DogModel,
+  DogType,
+  DogInputType,
+  VaccineType,
+  VaccineInputType,
+  NoteType,
+  NoteInputType,
+  DogResolver,
+};

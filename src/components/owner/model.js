@@ -7,6 +7,7 @@ const Owner = new Schema(
     email: { type: String },
     phone: [{ type: String, required: true }],
     dni: { type: String, required: true },
+    dogs: { type: Schema.Types.ObjectId, ref: "dog" },
   },
   {
     timestamps: true,
@@ -20,10 +21,20 @@ const OwnerType = `
     firstName: String!
     lastName: String!
     email: String
-    dni: String!
     phone: [String!]!
+    dni: String!
+    dogs: [Dog]
   }
 `;
 
+const OwnerResolver = {
+  dogs: async (parent, args, context) => {
+    console.log(parent);
+    return await context.model.dog.find({
+      owner: parent._id,
+    });
+  },
+};
+
 const OwnerModel = model("owner", Owner);
-module.exports = { OwnerModel, OwnerType };
+module.exports = { OwnerModel, OwnerType, OwnerResolver };
