@@ -46,7 +46,7 @@ const AttendanceMutationResolver = {
     const { hours, minutes } = context.utils.duration(attendance);
     const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
 
-    let amountOwed;
+    let balance;
 
     if (args.passOwnedId) {
       // get pass and convert time to minutes
@@ -57,32 +57,27 @@ const AttendanceMutationResolver = {
         const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
         const timeCoveredByPass =
           passOwnedTimeInMinutes - attendanceTimeInMinutes;
-        if (timeCoveredByPass >= 0) {
-          return await updateResolver(
-            "attendance",
-            { id: args.id, balance: 0, passUsed: args.passOwnedId },
-            context
-          );
-        } else {
-          amountOwed = (Math.abs(timeCoveredByPass) / 60) * price;
-          return await updateResolver(
-            "attendance",
-            { id: args.id, balance: Math.floor(amountOwed) },
-            context
-          );
-        }
-      } else {
-        const cash = Number(args.payment) || 0;
-        amountOwed = (attendanceTimeInMinutes / 60) * price;
+        balance =
+          timeCoveredByPass >= 0
+            ? 0
+            : Math.floor((Math.abs(timeCoveredByPass) / 60) * price);
         return await updateResolver(
           "attendance",
-          {
-            id: args.id,
-            balance: Math.floor(amountOwed) - Number(args.payment),
-          },
+          { id: args.id, balance, passUsed: args.passOwnedId },
           context
         );
       }
+    } else {
+      const payment = Number(args.payment) || 0;
+      balance = Math.floor((attendanceTimeInMinutes / 60) * price) - payment;
+      return await updateResolver(
+        "attendance",
+        {
+          id: args.id,
+          balance,
+        },
+        context
+      );
     }
   },
   createAttendance: async (parent, args, context) => {
