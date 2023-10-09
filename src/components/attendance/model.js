@@ -8,20 +8,13 @@ const Attendance = new Schema(
     start: { type: Date, required: true },
     end: { type: Date },
     passUsed: { type: Schema.Types.ObjectId, ref: "pass" },
-    payment: { type: Object },
+    payment: { type: Number },
     balance: { type: Number },
   },
   {
     timestamps: true,
   }
 );
-
-const PaymentType = `
-  type Payment {
-    type: String!
-    amount: Int!
-  }
-`;
 
 const AttendanceType = `
     type Attendance {
@@ -31,7 +24,7 @@ const AttendanceType = `
       end: String
       totalTime: String!
       passUsed: PassOwned
-      payment: Payment
+      payment: Int
       balance: Int
     }
   `;
@@ -67,6 +60,5 @@ const AttendanceModel = model("attendance", Attendance);
 module.exports = {
   AttendanceModel,
   AttendanceType,
-  PaymentType,
   AttendanceResolver,
 };
