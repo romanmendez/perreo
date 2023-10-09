@@ -54,6 +54,9 @@ const AttendanceResolver = {
     const { hours, minutes } = context.utils.duration(att);
     return `${hours}:${minutes}`;
   },
+  passUsed: async (parent, args, context) => {
+    return await context.model.passOwned.findById(parent.passUsed);
+  },
   balance: async (parent, args, context) => {
     const att = await context.model.attendance.findById(parent.id);
 
