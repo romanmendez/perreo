@@ -18,7 +18,6 @@ const Attendance = new Schema(
 
 const PaymentType = `
   type Payment {
-    id: ID!
     type: String!
     amount: Int!
   }
@@ -51,7 +50,7 @@ const AttendanceResolver = {
   },
   totalTime: async (parent, args, context) => {
     const att = await context.model.attendance.findById(parent.id);
-    const { hours, minutes } = context.utils.duration(att);
+    const { hours, minutes } = context.utils.duration(att.start, att.end);
     return `${hours}:${minutes}`;
   },
   passUsed: async (parent, args, context) => {
@@ -59,12 +58,8 @@ const AttendanceResolver = {
   },
   balance: async (parent, args, context) => {
     const att = await context.model.attendance.findById(parent.id);
-
     const { price } = await context.model.price.findOne({ name: "hour" });
-    const { hours, minutes } = context.utils.duration(att);
-    const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
-
-    return Math.floor((attendanceTimeInMinutes / 60) * price);
+    return context.utils.balance(att.start, att.end, price);
   },
 };
 

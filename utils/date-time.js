@@ -4,15 +4,22 @@ function daysBetween(start, end) {
   return start.getDate() - end.getDate() * 24 * 60 * 60000;
 }
 
-function duration(attendance) {
-  const start = DateTime.fromJSDate(attendance.start);
-  const end = DateTime.fromJSDate(attendance.end || new Date());
+function duration(startTime, endTime) {
+  const start = DateTime.fromJSDate(startTime);
+  const end = DateTime.fromJSDate(endTime || new Date());
   const diff = end.diff(start, ["hours", "minutes"]);
 
   const hours = String(Math.floor(diff.hours)).padStart(2, "0");
   const minutes = String(Math.floor(diff.minutes) % 60).padStart(2, "0");
 
   return { hours, minutes };
+}
+
+function balance(startTime, endTime, price) {
+  console.log(startTime, endTime, price);
+  const { hours, minutes } = duration(startTime, endTime);
+  const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
+  return Math.floor((attendanceTimeInMinutes / 60) * price);
 }
 
 function timeFromNow(number, period) {
@@ -27,7 +34,7 @@ function timeFromNow(number, period) {
 
 function totalDuration(attendancesArray) {
   const durations = attendancesArray.map((att) => {
-    return duration(att);
+    return duration(att.start, att.end);
   });
   const sum = durations.reduce((sum, dur) => {
     Duration.fromObject(dur);
@@ -36,4 +43,4 @@ function totalDuration(attendancesArray) {
   return sum.normalize().toObject();
 }
 
-module.exports = { duration, timeFromNow, totalDuration };
+module.exports = { duration, timeFromNow, totalDuration, balance };

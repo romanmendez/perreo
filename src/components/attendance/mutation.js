@@ -1,6 +1,7 @@
 const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 const { Duration } = require("luxon");
 const { PassOwned } = require("../../../graphql/resolvers");
+const { AttendanceModel, AttendanceResolver } = require("./model");
 
 const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
@@ -34,9 +35,14 @@ const AttendanceMutationResolver = {
   },
   endAttendance: async (parent, args, context) => {
     const end = new Date();
+    const { price } = await context.model.price.findOne({ name: "hour" });
+    const attendance = await context.model.attendance.findOne({
+      dog: args.dogId,
+    });
+
     return await context.model.attendance.findOneAndUpdate(
       { dog: args.dogId },
-      { end },
+      { end, balance: context.utils.balance(attendance.start, end, price) },
       { returnOriginal: false }
     );
   },
@@ -61,20 +67,33 @@ const AttendanceMutationResolver = {
           timeCoveredByPass >= 0
             ? 0
             : Math.floor((Math.abs(timeCoveredByPass) / 60) * price);
+        console.log(
+          "time covered by pass",
+          timeCoveredByPass,
+          balance,
+          "attendance balance",
+          attendance.balance
+        );
         return await updateResolver(
           "attendance",
-          { id: args.id, balance, passUsed: args.passOwnedId },
+          {
+            id: args.id,
+            balance,
+            passUsed: args.passOwnedId,
+            payment: { type: "pass", amount: attendance.balance - balance },
+          },
           context
         );
       }
-    } else {
-      const payment = Number(args.payment) || 0;
+    } else if (args.payment) {
+      const payment = Number(args.payment);
       balance = Math.floor((attendanceTimeInMinutes / 60) * price) - payment;
       return await updateResolver(
         "attendance",
         {
           id: args.id,
           balance,
+          payment: { type: "cash", amount: attendance.balance - balance },
         },
         context
       );
