@@ -10,6 +10,7 @@ const {
 } = require("../src/components/dog");
 const {
   AttendanceType,
+  PaymentType,
   AttendanceMutationType,
   AttendanceQueryType,
 } = require("../src/components/attendance");
@@ -57,6 +58,7 @@ module.exports = `
   ${VaccineType}
   ${NoteType}
   ${AttendanceType}
+  ${PaymentType}
   ${OwnerType}
   ${PassType}
   ${PassOwnedType}
