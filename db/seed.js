@@ -64,12 +64,15 @@ async function seed() {
   // PASSESOWNED: Create
   for (let i = 0; i < 3; i++) {
     const randomPass = createdPasses[Math.floor(Math.random() * passes.length)];
+    const purchaseDate = faker.date.soon({ days: randomPass.totalDays });
 
     passesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
-      purchaseDate: faker.date.soon({ days: randomPass.totalDays }),
-      expirationDate: faker.date.soon({ days: 30, refDate: this.purchaseDate }),
+      purchaseDate,
+      expirationDate: DateTime.fromISO(purchaseDate.toISOString())
+        .plus({ days: 30 })
+        .toISO(),
       active: true,
     });
   }
