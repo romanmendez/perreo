@@ -14,15 +14,22 @@ const Owner = new Schema(
     toJSON: { virtuals: true },
   }
 );
-
+const ownerFields = `
+  firstName: String!
+  lastName: String!
+  email: String
+  phone: [String!]!
+  dni: String!
+`;
+const OwnerInputType = `
+  input OwnerInput {
+    ${ownerFields}
+  }
+`;
 const OwnerType = `
   type Owner {
     id: ID!
-    firstName: String!
-    lastName: String!
-    email: String
-    phone: [String!]!
-    dni: String!
+    ${ownerFields}
     dogs: [Dog]
   }
 `;

@@ -1,21 +1,8 @@
 const { updateResolver } = require("../../../graphql/defaults.js");
 
 const OwnerMutationType = `
-  createOwner(
-    firstName: String!
-    lastName: String!
-    email: String
-    phone: Int!
-    dni: String!
-  ): Owner!
-  updateOwner(
-    id: String!
-    firstName: String
-    lastName: String
-    email: String
-    phone: Int
-    dni: String
-  ): Owner!
+  createOwner(input: OwnerInput): Owner!
+  updateOwner(id: String!, input: OwnerInput): Owner!
 `;
 
 const OwnerMutationResolver = {
