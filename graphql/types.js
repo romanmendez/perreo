@@ -1,10 +1,6 @@
 const {
   DogType,
   DogInputType,
-  VaccineType,
-  VaccineInputType,
-  NoteType,
-  NoteInputType,
   DogMutationType,
   DogQueryType,
 } = require("../src/components/dog");
@@ -27,11 +23,17 @@ const {
 } = require("../src/components/pass");
 const {
   UserType,
-  AddressType,
-  AuthType,
   UserQueryType,
   UserMutationType,
 } = require("../src/components/user");
+const {
+  VaccineType,
+  VaccineInputType,
+  NoteType,
+  NoteInputType,
+  AuthType,
+  AddressType,
+} = require("../src/components/other");
 
 module.exports = `
   scalar Date
