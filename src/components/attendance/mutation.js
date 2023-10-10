@@ -7,6 +7,7 @@ const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
   endAttendance(dogId: String!): Attendance!
   payAttendance(id: String!, passOwnedId: String, payment: Int): Attendance!
+  cancelAttendanceBalance(id: String!): Attendance!
   createAttendance(dogId: String!, start: Date!, end: Date!): Attendance!
   updateAttendance(id: String!, start: Date, end: Date): Attendance!
   deleteAttendance(id: String!): Int!
@@ -103,6 +104,9 @@ const AttendanceMutationResolver = {
         context
       );
     }
+  },
+  cancelAttendanceBalance: async (parent, args, context) => {
+    return await updateResolver("attendance", { ...args, balance: 0 }, context);
   },
   createAttendance: async (parent, args, context) => {
     return await context.model.attendance.create({
