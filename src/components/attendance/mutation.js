@@ -35,11 +35,13 @@ const AttendanceMutationResolver = {
   },
   endAttendance: async (parent, args, context) => {
     const end = new Date();
-    const { price } = await context.model.price.findOne({ name: "hour" });
+    const price = await context.utils.getPrice(context);
     const attendance = await context.model.attendance.findOne({
       dog: args.dogId,
       end: null,
     });
+    if (!attendance)
+      throw new Error("This dog doesn't have any active attendances");
 
     return await context.model.attendance.findOneAndUpdate(
       { _id: attendance._id },
@@ -49,7 +51,7 @@ const AttendanceMutationResolver = {
   },
   payAttendance: async (parent, args, context) => {
     const attendance = await context.model.attendance.findById(args.id);
-    const { price } = await context.model.price.findOne({ name: "hour" });
+    const price = await context.utils.getPrice(context);
     const { hours, minutes } = context.utils.duration(
       attendance.start,
       attendance.end

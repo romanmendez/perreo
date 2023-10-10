@@ -16,10 +16,16 @@ function duration(startTime, endTime) {
 }
 
 function balance(startTime, endTime, price) {
-  console.log(startTime, endTime, price);
   const { hours, minutes } = duration(startTime, endTime);
   const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
   return Math.floor((attendanceTimeInMinutes / 60) * price);
+}
+
+async function getPrice(context) {
+  const { value: price } = await context.model.data.findOne({
+    key: "pricePerHour",
+  });
+  return price;
 }
 
 function timeFromNow(number, period) {
@@ -43,4 +49,4 @@ function totalDuration(attendancesArray) {
   return sum.normalize().toObject();
 }
 
-module.exports = { duration, timeFromNow, totalDuration, balance };
+module.exports = { duration, timeFromNow, totalDuration, balance, getPrice };

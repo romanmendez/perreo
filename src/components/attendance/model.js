@@ -53,7 +53,7 @@ const AttendanceResolver = {
     const att = await context.model.attendance.findById(parent.id);
     if (att.balance !== null) return att.balance;
 
-    const { price } = await context.model.price.findOne({ name: "hour" });
+    const price = await context.utils.getPrice(context);
     return context.utils.balance(att.start, att.end, price);
   },
 };
