@@ -1,11 +1,5 @@
 const { Schema, model } = require("mongoose");
 
-const AuthType = `
-  type Auth {
-    token: String!
-    user: User!
-  }
-`;
 const UserType = `
   type User {
     id: ID!
@@ -14,16 +8,6 @@ const UserType = `
     password: String!
     address: Address
     access: Int!
-  }
-`;
-const AddressType = `
-  type Address {
-    id: ID!
-    street: String!
-    number: String
-    zipcode: String!
-    city: String!
-    country: String!
   }
 `;
 const User = new Schema(
@@ -51,4 +35,4 @@ const UserResolver = {
 };
 
 const UserModel = model("user", User);
-module.exports = { AuthType, UserType, AddressType, UserModel, UserResolver };
+module.exports = { UserType, UserModel, UserResolver };

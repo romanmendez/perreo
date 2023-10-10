@@ -7,7 +7,8 @@ const Attendance = new Schema(
     dog: { type: Schema.Types.ObjectId, ref: "dog", required: true },
     start: { type: Date, required: true },
     end: { type: Date },
-    payment: { type: Schema.Types.ObjectId, ref: "pass" },
+    passUsed: { type: Schema.Types.ObjectId, ref: "pass" },
+    payment: { type: Number },
     balance: { type: Number },
   },
   {
@@ -22,7 +23,8 @@ const AttendanceType = `
       start: String!
       end: String
       totalTime: String!
-      payment: Pass
+      passUsed: PassOwned
+      payment: Int
       balance: Int
     }
   `;
@@ -41,10 +43,24 @@ const AttendanceResolver = {
   },
   totalTime: async (parent, args, context) => {
     const att = await context.model.attendance.findById(parent.id);
-    const { hours, minutes } = context.utils.duration(att);
+    const { hours, minutes } = context.utils.duration(att.start, att.end);
     return `${hours}:${minutes}`;
+  },
+  passUsed: async (parent, args, context) => {
+    return await context.model.passOwned.findById(parent.passUsed);
+  },
+  balance: async (parent, args, context) => {
+    const att = await context.model.attendance.findById(parent.id);
+    if (att.balance !== null) return att.balance;
+
+    const price = await context.utils.getPrice(context);
+    return context.utils.balance(att.start, att.end, price);
   },
 };
 
 const AttendanceModel = model("attendance", Attendance);
-module.exports = { AttendanceModel, AttendanceType, AttendanceResolver };
+module.exports = {
+  AttendanceModel,
+  AttendanceType,
+  AttendanceResolver,
+};

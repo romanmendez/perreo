@@ -1,18 +1,19 @@
 require("./config");
 const mongoose = require("mongoose");
 const { fakerES: faker } = require("@faker-js/faker");
+const { DateTime } = require("luxon");
 const { DogModel } = require("../src/components/dog");
 const { OwnerModel } = require("../src/components/owner");
 const { PassModel, PassOwnedModel } = require("../src/components/pass");
 const { AttendanceModel } = require("../src/components/attendance");
-const { PriceModel } = require("../src/components/price");
+const { BusinessDataModel } = require("../src/components/other");
 
 async function seed() {
   const dogs = [];
   const owners = [];
   const passes = [];
   const passesOwned = [];
-  const price = [];
+  const businessData = [];
 
   // OWNERS: Create
   for (let i = 0; i < 5; i++) {
@@ -63,11 +64,15 @@ async function seed() {
   // PASSESOWNED: Create
   for (let i = 0; i < 3; i++) {
     const randomPass = createdPasses[Math.floor(Math.random() * passes.length)];
+    const purchaseDate = faker.date.soon({ days: randomPass.totalDays });
 
     passesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
-      expiration: faker.date.soon({ days: randomPass.totalDays }),
+      purchaseDate,
+      expirationDate: DateTime.fromISO(purchaseDate.toISOString())
+        .plus({ days: 30 })
+        .toISO(),
       active: true,
     });
   }
@@ -100,12 +105,36 @@ async function seed() {
       breed: faker.animal.dog(),
       sex: faker.person.sex(),
       dateOfBirth,
-      vaccines: {
-        parvovirus: faker.date.between({ from: dateOfBirth, to: recentDate }),
-        distemper: faker.date.between({ from: dateOfBirth, to: recentDate }),
-        multipurpose: faker.date.between({ from: dateOfBirth, to: recentDate }),
-        rabies: faker.date.between({ from: dateOfBirth, to: recentDate }),
-      },
+      vaccines: [
+        {
+          name: "parvovirus",
+          dateAdministered: faker.date.between({
+            from: dateOfBirth,
+            to: recentDate,
+          }),
+        },
+        {
+          name: "distemper",
+          dateAdministered: faker.date.between({
+            from: dateOfBirth,
+            to: recentDate,
+          }),
+        },
+        {
+          name: "multipurpose",
+          dateAdministered: faker.date.between({
+            from: dateOfBirth,
+            to: recentDate,
+          }),
+        },
+        {
+          name: "rabies",
+          dateAdministered: faker.date.between({
+            from: dateOfBirth,
+            to: recentDate,
+          }),
+        },
+      ],
       fixed,
       heat: fixed
         ? null
@@ -127,13 +156,13 @@ async function seed() {
   );
 
   // PRICE: Create
-  price.push({
-    name: "hour",
-    price: 10,
+  businessData.push({
+    key: "pricePerHour",
+    value: 10,
   });
 
   // PRICE: Populate
-  await populate("price", PriceModel, price);
+  await populate("business_data", BusinessDataModel, businessData);
 }
 
 // populate DB function

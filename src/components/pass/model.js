@@ -13,8 +13,9 @@ const PassOwnedType = `
   type PassOwned {
     id: ID!
     pass: Pass!
-    daysUsed: Int
-    expiration: Date
+    daysUsed: Int!
+    purchaseDate: Date!
+    expirationDate: Date
     active: Boolean!
   }
 `;
@@ -33,7 +34,8 @@ const Pass = new Schema(
 const PassOwned = new Schema({
   pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
   daysUsed: { type: Number, required: true },
-  expiration: { type: Date },
+  purchaseDate: { type: Date, required: true },
+  expirationDate: { type: Date },
   active: { type: Boolean, required: true },
 });
 

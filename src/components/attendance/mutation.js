@@ -1,11 +1,13 @@
 const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 const { Duration } = require("luxon");
 const { PassOwned } = require("../../../graphql/resolvers");
+const { AttendanceModel, AttendanceResolver } = require("./model");
 
 const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
   endAttendance(dogId: String!): Attendance!
-  payAttendance(id: String!, passOwnedId: String, cash: Int): Attendance!
+  payAttendance(id: String!, passOwnedId: String, payment: Int): Attendance!
+  cancelAttendanceBalance(id: String!): Attendance!
   createAttendance(dogId: String!, start: Date!, end: Date!): Attendance!
   updateAttendance(id: String!, start: Date, end: Date): Attendance!
   deleteAttendance(id: String!): Int!
@@ -34,68 +36,77 @@ const AttendanceMutationResolver = {
   },
   endAttendance: async (parent, args, context) => {
     const end = new Date();
+    const price = await context.utils.getPrice(context);
     const attendance = await context.model.attendance.findOne({
       dog: args.dogId,
       end: null,
     });
-    const newAttendance = { ...attendance._doc, end };
-    const { hours, minutes } = context.utils.duration(newAttendance);
+    if (!attendance)
+      throw new Error("This dog doesn't have any active attendances");
 
-    const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
-    const { price } = await context.model.price.findOne({ name: "hour" });
-    const balance = (attendanceTimeInMinutes / 60) * price;
-    console.log(balance, price);
-
-    return await updateResolver(
-      "attendance",
-      { id: attendance._id, balance },
-      context
+    return await context.model.attendance.findOneAndUpdate(
+      { _id: attendance._id },
+      { end, balance: context.utils.balance(attendance.start, end, price) },
+      { returnOriginal: false }
     );
   },
   payAttendance: async (parent, args, context) => {
     const attendance = await context.model.attendance.findById(args.id);
-
-    const { hours, minutes } = context.utils.duration(attendance);
+    const price = await context.utils.getPrice(context);
+    const { hours, minutes } = context.utils.duration(
+      attendance.start,
+      attendance.end
+    );
     const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
-    const price = await context.model.price.find({ name: "hour" });
-    // convert total times to minutes
 
-    let newAttendance;
-    let amountOwed;
-
+    let balance;
     if (args.passOwnedId) {
+      if (attendance.passUsed)
+        throw new Error("This attendance already has a pass associated to it");
       // get pass and convert time to minutes
       const passOwned = await context.model.passOwned
         .findById(args.passOwnedId)
         .populate("pass");
-      const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
       if (passOwned.active) {
-        const balance = passOwnedTimeInMinutes - attendanceTimeInMinutes;
-        if (balance >= 0) {
-          newAttendance = await updateResolver(
-            "attendance",
-            { id: args.id, balance: 0 },
-            context
-          );
-        } else {
-          amountOwed = (balance / 60) * price;
-          newAttendance = await updateResolver(
-            "attendance",
-            { balance: amountOwed },
-            context
-          );
-        }
-      } else {
-        const cash = Number(args.cash) || 0;
-        amountOwed = (attendanceTimeInMinutes / 60) * price;
-        newAttendance = await updateResolver(
+        const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
+        const timeNotCoveredByPass =
+          attendanceTimeInMinutes - passOwnedTimeInMinutes;
+        balance =
+          timeNotCoveredByPass > 0
+            ? Math.floor((Math.abs(timeNotCoveredByPass) / 60) * price)
+            : 0;
+
+        return await updateResolver(
           "attendance",
-          { balance: amountOwed - Number(args.cash) },
+          {
+            id: args.id,
+            balance,
+            passUsed: args.passOwnedId,
+          },
           context
         );
       }
+    } else if (args.payment) {
+      if (attendance.balance === 0)
+        throw new Error("This attendance doesn't have a pending balance");
+      if (args.payment > attendance.balance)
+        throw new Error(
+          `The payment amount of ${args.payment} is greater than the pending amount ${attendance.balance}`
+        );
+      const payment = Number(args.payment);
+      return await updateResolver(
+        "attendance",
+        {
+          id: args.id,
+          payment,
+          balance: attendance.balance - payment,
+        },
+        context
+      );
     }
-    return newAttendance;
+  },
+  cancelAttendanceBalance: async (parent, args, context) => {
+    return await updateResolver("attendance", { ...args, balance: 0 }, context);
   },
   createAttendance: async (parent, args, context) => {
     return await context.model.attendance.create({

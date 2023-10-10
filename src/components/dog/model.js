@@ -24,36 +24,7 @@ const Dog = new Schema(
   }
 );
 
-const vaccineFields = `
-  name: String!
-  dateAdministered: Date!
-  nextDue: Date
-`;
-const VaccineType = `
-  type Vaccine {
-    ${vaccineFields}
-  }
-`;
-const VaccineInputType = `
-  input VaccineInput {
-    ${vaccineFields}
-  }
-`;
-const noteFields = `
-  color: String!
-  text: String!
-  active: Boolean!
-`;
-const NoteType = `
-  type Note {
-    ${noteFields}
-  }
-`;
-const NoteInputType = `
-  input NoteInput {
-    ${noteFields}
-  }
-`;
+// define common fields shared between types
 const dogFields = `
   name: String
   breed: String
@@ -65,7 +36,7 @@ const dogFields = `
   chip: String
   scan: String
 `;
-
+// define types
 const DogType = `
   type Dog {
     id: ID!
@@ -77,7 +48,6 @@ const DogType = `
     activePasses: [PassOwned]
   }
   `;
-
 const DogInputType = `
    input DogInput {
     ${dogFields}
@@ -115,9 +85,5 @@ module.exports = {
   DogModel,
   DogType,
   DogInputType,
-  VaccineType,
-  VaccineInputType,
-  NoteType,
-  NoteInputType,
   DogResolver,
 };
