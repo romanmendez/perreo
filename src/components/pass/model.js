@@ -1,12 +1,20 @@
 const { Schema, model } = require("mongoose");
 
+const passFields = `
+  name: String
+  totalDays: Int
+  hoursPerDay: Int
+  price: Int
+`;
+const PassInputType = `
+  input PassInput {
+    ${passFields}
+  }
+`;
 const PassType = `
   type Pass {
     id: ID!
-    name: String!
-    totalDays: Int!
-    hoursPerDay: Int!
-    price: Int!
+    ${passFields}
   }
 `;
 const PassOwnedType = `
@@ -57,6 +65,7 @@ const PassOwnedModel = model("pass_owned", PassOwned);
 module.exports = {
   PassModel,
   PassType,
+  PassInputType,
   PassOwnedModel,
   PassOwnedType,
   PassOwnedResolver,

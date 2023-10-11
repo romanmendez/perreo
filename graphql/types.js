@@ -17,6 +17,7 @@ const {
 } = require("../src/components/owner");
 const {
   PassType,
+  PassInputType,
   PassOwnedType,
   PassQueryType,
   PassMutationType,
@@ -37,6 +38,7 @@ const {
 
 module.exports = `
   scalar Date
+  ${PassInputType}
   ${OwnerInputType}
   ${DogInputType}
   ${NoteInputType}
