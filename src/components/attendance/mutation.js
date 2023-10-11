@@ -58,16 +58,20 @@ const AttendanceMutationResolver = {
       attendance.end
     );
     const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
-
     let balance;
     if (args.passOwnedId) {
       if (attendance.passUsed)
         throw new Error("This attendance already has a pass associated to it");
-      // get pass and convert time to minutes
+      // get passOwned and check if it's active
       const passOwned = await context.model.passOwned
         .findById(args.passOwnedId)
         .populate("pass");
-      if (passOwned.active) {
+      if (!passOwned.active) {
+        throw new Error(
+          "The pass provided is expired or has already been completely used"
+        );
+      } else {
+        // if passOwned is active, caculate balance remaining after using hours from pass
         const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
         const timeNotCoveredByPass =
           attendanceTimeInMinutes - passOwnedTimeInMinutes;
@@ -76,6 +80,19 @@ const AttendanceMutationResolver = {
             ? Math.floor((Math.abs(timeNotCoveredByPass) / 60) * price)
             : 0;
 
+        // check daysUsed in pass and set as inactive if it's the last day
+        const lastDay = passOwned.daysUsed === passOwned.pass.totalDays - 1;
+        // update daysUsed in passOwned
+        await updateResolver(
+          "passOwned",
+          {
+            id: args.passOwnedId,
+            daysUsed: passOwned.daysUsed + 1,
+            active: !lastDay,
+          },
+          context
+        );
+        // return attendance with updated balance and passOwned
         return await updateResolver(
           "attendance",
           {
