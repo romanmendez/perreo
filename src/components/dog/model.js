@@ -13,7 +13,7 @@ const Dog = new Schema(
     heat: { type: Date },
     chip: { type: String },
     scan: String,
-    owner: { type: Schema.Types.ObjectId, ref: "owner" },
+    owners: [{ type: Schema.Types.ObjectId, ref: "owner" }],
     passes: [{ type: Schema.Types.ObjectId, ref: "pass_owned" }],
     notes: [String],
     active: { type: Boolean, required: true },
@@ -43,7 +43,7 @@ const DogType = `
     ${dogFields}
     notes: [Note]
     vaccines: [Vaccine]
-    owner: Owner
+    owners: [Owner]
     usedPasses: [PassOwned]
     activePasses: [PassOwned]
   }
@@ -72,8 +72,8 @@ const DogResolver = {
     });
     return passes;
   },
-  owner: async (parent, args, context) => {
-    return await context.model.owner.findById(parent.owner);
+  owners: async (parent, args, context) => {
+    return await context.model.owner.find({ _id: parent.owners });
   },
   profilePic: async (parent, args, context) => {
     return await context.utils.getProfilePic(`${parent.id}/profile`);
