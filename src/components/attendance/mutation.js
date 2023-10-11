@@ -1,7 +1,6 @@
 const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 const { Duration } = require("luxon");
-const { PassOwned } = require("../../../graphql/resolvers");
-const { AttendanceModel, AttendanceResolver } = require("./model");
+const { PassMutationResolver } = require("../pass");
 
 const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
@@ -57,51 +56,35 @@ const AttendanceMutationResolver = {
       attendance.start,
       attendance.end
     );
-    const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
-    let balance;
-    if (args.passOwnedId) {
-      if (attendance.passUsed)
-        throw new Error("This attendance already has a pass associated to it");
-      // get passOwned and check if it's active
-      const passOwned = await context.model.passOwned
-        .findById(args.passOwnedId)
-        .populate("pass");
-      if (!passOwned.active) {
-        throw new Error(
-          "The pass provided is expired or has already been completely used"
-        );
-      } else {
-        // if passOwned is active, caculate balance remaining after using hours from pass
-        const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
-        const timeNotCoveredByPass =
-          attendanceTimeInMinutes - passOwnedTimeInMinutes;
-        balance =
-          timeNotCoveredByPass > 0
-            ? Math.floor((Math.abs(timeNotCoveredByPass) / 60) * price)
-            : 0;
+    const attendanceMinutes = Number(hours) * 60 + Number(minutes);
 
-        // check daysUsed in pass and set as inactive if it's the last day
-        const lastDay = passOwned.daysUsed === passOwned.pass.totalDays - 1;
-        // update daysUsed in passOwned
-        await updateResolver(
-          "passOwned",
-          {
-            id: args.passOwnedId,
-            daysUsed: passOwned.daysUsed + 1,
-            active: !lastDay,
-          },
+    // check if there is a passOwned ID provided
+    if (args.passOwnedId) {
+      // check if the attendance already has a passOwned associated to it
+      if (attendance.passUsed) {
+        throw new Error("This attendance already has a pass associated to it");
+      } else {
+        const usePassOwned = await PassMutationResolver.usePassOwned(
+          parent,
+          { passOwnedId: args.passOwnedId, attendanceMinutes },
           context
         );
-        // return attendance with updated balance and passOwned
-        return await updateResolver(
-          "attendance",
-          {
-            id: args.id,
-            balance,
-            passUsed: args.passOwnedId,
-          },
-          context
-        );
+        if (usePassOwned) {
+          // return attendance with updated balance and passOwned
+          return await updateResolver(
+            "attendance",
+            {
+              id: args.id,
+              balance: usePassOwned.balance,
+              passUsed: args.passOwnedId,
+            },
+            context
+          );
+        } else {
+          throw new Error(
+            "The pass provided is expired or has already been completely used"
+          );
+        }
       }
     } else if (args.payment) {
       if (attendance.balance === 0)
