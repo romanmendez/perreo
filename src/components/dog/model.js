@@ -15,7 +15,7 @@ const Dog = new Schema(
     scan: String,
     owners: [{ type: Schema.Types.ObjectId, ref: "owner" }],
     passes: [{ type: Schema.Types.ObjectId, ref: "pass_owned" }],
-    notes: [String],
+    notes: [{ type: Object }],
     isActive: { type: Boolean, default: true },
   },
   {

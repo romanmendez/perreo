@@ -10,6 +10,7 @@ const Attendance = new Schema(
     passUsed: { type: Schema.Types.ObjectId, ref: "pass" },
     payment: { type: Number },
     balance: { type: Number },
+    notes: [{ type: Object }],
   },
   {
     timestamps: true,
@@ -22,10 +23,11 @@ const AttendanceType = `
       dog: Dog!
       start: String!
       end: String
-      totalTime: String!
       passUsed: PassOwned
       payment: Int
       balance: Int
+      notes: [Note]
+      totalTime: String!
     }
   `;
 

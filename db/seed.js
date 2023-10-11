@@ -140,7 +140,13 @@ async function seed() {
         : faker.date.between({ from: dateOfBirth, to: recentDate }),
       chip: faker.string.numeric(10),
       scan: faker.string.numeric(15),
-      notes: faker.lorem.lines(1),
+      notes: [
+        {
+          key: faker.color.human(),
+          value: faker.lorem.lines(1),
+          isActive: faker.datatype.boolean(),
+        },
+      ],
       passes: pass ? pass : [],
     });
   }
