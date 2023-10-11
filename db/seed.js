@@ -141,7 +141,6 @@ async function seed() {
         : faker.date.between({ from: dateOfBirth, to: recentDate }),
       chip: faker.string.numeric(10),
       scan: faker.string.numeric(15),
-      owner,
       notes: faker.lorem.lines(1),
       passes: pass ? pass : [],
       active: true,
