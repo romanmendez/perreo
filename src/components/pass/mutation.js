@@ -1,21 +1,16 @@
 const formatDuration = require("date-fns/formatDuration");
-const { updateResolver } = require("../../../graphql/defaults");
+const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 
 const PassMutationType = `
-  createPass(
-    name: String!
-    totalDays: Int
-    hoursPerDay: Int!
-    price: Int!
-    expiration: Date
-  ): Pass!
+  createPass(input: PassInput!): Pass!
   sellPass(passId: String!, dogId: String!): PassOwned!
   usePassOwned(passOwnedId: String! attendanceMinutes: Int!): PassOwned!
+  updatePass(id: ID!, input: PassInput): Pass!
 `;
 
 const PassMutationResolver = {
   createPass: async (parent, args, context) => {
-    return await context.model.pass.create(args);
+    return await context.model.pass.create(args.input);
   },
   sellPass: async (parent, args, context) => {
     const dog = await context.model.dog.findById(args.dogId);
@@ -62,6 +57,13 @@ const PassMutationResolver = {
       );
       return { passOwned: usedPassOwned, balance };
     }
+  },
+  updatePass: async (parent, args, context) => {
+    return await updateResolver(
+      "pass",
+      { id: args.id, ...args.input },
+      context
+    );
   },
 };
 
