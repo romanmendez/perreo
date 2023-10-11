@@ -7,7 +7,7 @@ const Owner = new Schema(
     email: { type: String },
     phone: [{ type: String, required: true }],
     dni: { type: String, required: true },
-    dogs: { type: Schema.Types.ObjectId, ref: "dog" },
+    dogs: [{ type: Schema.Types.ObjectId, ref: "dog" }],
   },
   {
     timestamps: true,
