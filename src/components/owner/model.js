@@ -8,6 +8,7 @@ const Owner = new Schema(
     phone: [{ type: String, required: true }],
     dni: { type: String, required: true },
     dogs: [{ type: Schema.Types.ObjectId, ref: "dog" }],
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
@@ -30,6 +31,7 @@ const OwnerType = `
   type Owner {
     id: ID!
     ${ownerFields}
+    isActive: Boolean!
     dogs: [Dog]
   }
 `;

@@ -6,6 +6,7 @@ const PassMutationType = `
   sellPass(passId: String!, dogId: String!): PassOwned!
   usePassOwned(passOwnedId: String! attendanceMinutes: Int!): PassOwned!
   updatePass(id: ID!, input: PassInput): Pass!
+  archivePass(id: ID!): Pass!
 `;
 
 const PassMutationResolver = {
@@ -62,6 +63,13 @@ const PassMutationResolver = {
     return await updateResolver(
       "pass",
       { id: args.id, ...args.input },
+      context
+    );
+  },
+  archivePass: async (parent, args, context) => {
+    return await updateResolver(
+      "pass",
+      { id: args.id, isActive: false },
       context
     );
   },

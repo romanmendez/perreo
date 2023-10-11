@@ -15,6 +15,7 @@ const PassType = `
   type Pass {
     id: ID!
     ${passFields}
+    isActive: Boolean!
   }
 `;
 const PassOwnedType = `
@@ -34,6 +35,7 @@ const Pass = new Schema(
     totalDays: { type: Number, required: true },
     hoursPerDay: { type: Number, required: true },
     price: { type: Number, required: true },
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,

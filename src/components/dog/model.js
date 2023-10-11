@@ -16,7 +16,7 @@ const Dog = new Schema(
     owners: [{ type: Schema.Types.ObjectId, ref: "owner" }],
     passes: [{ type: Schema.Types.ObjectId, ref: "pass_owned" }],
     notes: [String],
-    active: { type: Boolean, required: true },
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
@@ -41,6 +41,7 @@ const DogType = `
   type Dog {
     id: ID!
     ${dogFields}
+    isActive: Boolean!
     notes: [Note]
     vaccines: [Vaccine]
     owners: [Owner]

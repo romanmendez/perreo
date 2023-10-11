@@ -4,6 +4,7 @@ const OwnerMutationType = `
   createOwner(input: OwnerInput): Owner!
   addDogToOwner(ownerId: String!, dogId: String!): Owner!
   updateOwner(id: String!, input: OwnerInput): Owner!
+  archiveOwner(id: ID!): Owner!
 `;
 
 const OwnerMutationResolver = {
@@ -23,6 +24,13 @@ const OwnerMutationResolver = {
     return await updateResolver(
       "owner",
       { id: args.ownerId, dogs: ownerDogs },
+      context
+    );
+  },
+  archiveDog: async (parent, args, context) => {
+    return await updateResolver(
+      "owner",
+      { id: args.id, isActive: false },
       context
     );
   },

@@ -142,7 +142,6 @@ async function seed() {
       scan: faker.string.numeric(15),
       notes: faker.lorem.lines(1),
       passes: pass ? pass : [],
-      active: true,
     });
   }
 

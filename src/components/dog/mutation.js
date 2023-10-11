@@ -3,6 +3,7 @@ const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 const DogMutationType = `
   createDog(input: DogInput): Dog!
   updateDog(id: ID!, input: DogInput): Dog!
+  archiveDog(id: ID!): Dog!
   deleteDog(id: ID!): Boolean!
 `;
 const DogMutationResolver = {
@@ -22,6 +23,13 @@ const DogMutationResolver = {
   updateDog: async (parent, args, context) => {
     const consolidatedArgs = { id: args.id, ...args.input };
     return await updateResolver("dog", consolidatedArgs, context);
+  },
+  archiveDog: async (parent, args, context) => {
+    return await updateResolver(
+      "dog",
+      { id: args.id, isActive: false },
+      context
+    );
   },
   deleteDog: async (parent, args, context) => {
     return await deleteResolver("dog", args, context);
