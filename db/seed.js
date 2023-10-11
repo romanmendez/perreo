@@ -69,7 +69,6 @@ async function seed() {
     passesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
-      purchaseDate,
       expirationDate: DateTime.fromISO(purchaseDate.toISOString())
         .plus({ days: 30 })
         .toISO(),

@@ -14,7 +14,7 @@ const PassOwnedType = `
     id: ID!
     pass: Pass!
     daysUsed: Int!
-    purchaseDate: Date!
+    createdAt: Date
     expirationDate: Date
     active: Boolean!
   }
@@ -31,13 +31,17 @@ const Pass = new Schema(
     timestamps: true,
   }
 );
-const PassOwned = new Schema({
-  pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
-  daysUsed: { type: Number, required: true },
-  purchaseDate: { type: Date, required: true },
-  expirationDate: { type: Date },
-  active: { type: Boolean, required: true },
-});
+const PassOwned = new Schema(
+  {
+    pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
+    daysUsed: { type: Number, required: true },
+    expirationDate: { type: Date },
+    active: { type: Boolean, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const PassOwnedResolver = {
   pass: async (parent, args, context) => {
