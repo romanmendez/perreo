@@ -29,7 +29,6 @@ const PassMutationResolver = {
     const dogUpdate = await dog.updateOne({
       $push: { passes: passOwned },
     });
-    console.log(passOwned, dogUpdate);
     return passOwned;
   },
   usePassOwned: async (parent, args, context) => {
