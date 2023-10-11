@@ -11,7 +11,7 @@ const {
 } = require("../src/components/attendance");
 const {
   OwnerType,
-  OwnerQueryFilterType,
+  OwnerInputType,
   OwnerMutationType,
   OwnerQueryType,
 } = require("../src/components/owner");
@@ -37,7 +37,7 @@ const {
 
 module.exports = `
   scalar Date
-  ${OwnerQueryFilterType}
+  ${OwnerInputType}
   ${DogInputType}
   ${NoteInputType}
   ${VaccineInputType}

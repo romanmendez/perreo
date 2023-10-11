@@ -1,15 +1,5 @@
 const OwnerQueryType = `
-  owners(filter: OwnerFilter): [Owner!]!
-  owner(dni: String): Owner
-`;
-
-const OwnerQueryFilterType = `
-  input OwnerFilter {
-    id: ID
-    firstName: String
-    lastName: String
-    dni: String
-  }
+  owners(filter: OwnerInput): [Owner!]!
 `;
 
 const OwnerQueryResolver = {
@@ -25,9 +15,6 @@ const OwnerQueryResolver = {
     }
     return await context.model.owner.find(query);
   },
-  owner: async (parent, args, context) => {
-    return await context.model.owner.findOne({ dni: args.dni });
-  },
 };
 
-module.exports = { OwnerQueryResolver, OwnerQueryType, OwnerQueryFilterType };
+module.exports = { OwnerQueryResolver, OwnerQueryType };

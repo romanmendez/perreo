@@ -15,11 +15,11 @@ const Owner = new Schema(
   }
 );
 const ownerFields = `
-  firstName: String!
-  lastName: String!
+  firstName: String
+  lastName: String
   email: String
-  phone: [String!]!
-  dni: String!
+  phone: [String!]
+  dni: String
 `;
 const OwnerInputType = `
   input OwnerInput {
@@ -36,12 +36,9 @@ const OwnerType = `
 
 const OwnerResolver = {
   dogs: async (parent, args, context) => {
-    console.log(parent);
-    return await context.model.dog.find({
-      owner: parent._id,
-    });
+    return await context.model.dog.findById(parent.dogs);
   },
 };
 
 const OwnerModel = model("owner", Owner);
-module.exports = { OwnerModel, OwnerType, OwnerResolver };
+module.exports = { OwnerModel, OwnerType, OwnerInputType, OwnerResolver };
