@@ -36,7 +36,7 @@ const OwnerType = `
 
 const OwnerResolver = {
   dogs: async (parent, args, context) => {
-    return await context.model.dog.findById(parent.dogs);
+    return await context.model.dog.find({ _id: parent.dogs });
   },
 };
 
