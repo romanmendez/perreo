@@ -1,12 +1,21 @@
 const { Schema, model } = require("mongoose");
 
+const passFields = `
+  name: String
+  totalDays: Int
+  hoursPerDay: Int
+  price: Int
+`;
+const PassInputType = `
+  input PassInput {
+    ${passFields}
+  }
+`;
 const PassType = `
   type Pass {
     id: ID!
-    name: String!
-    totalDays: Int!
-    hoursPerDay: Int!
-    price: Int!
+    ${passFields}
+    isActive: Boolean!
   }
 `;
 const PassOwnedType = `
@@ -14,7 +23,7 @@ const PassOwnedType = `
     id: ID!
     pass: Pass!
     daysUsed: Int!
-    purchaseDate: Date!
+    createdAt: Date
     expirationDate: Date
     active: Boolean!
   }
@@ -26,18 +35,23 @@ const Pass = new Schema(
     totalDays: { type: Number, required: true },
     hoursPerDay: { type: Number, required: true },
     price: { type: Number, required: true },
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
   }
 );
-const PassOwned = new Schema({
-  pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
-  daysUsed: { type: Number, required: true },
-  purchaseDate: { type: Date, required: true },
-  expirationDate: { type: Date },
-  active: { type: Boolean, required: true },
-});
+const PassOwned = new Schema(
+  {
+    pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
+    daysUsed: { type: Number, required: true },
+    expirationDate: { type: Date },
+    active: { type: Boolean, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const PassOwnedResolver = {
   pass: async (parent, args, context) => {
@@ -53,6 +67,7 @@ const PassOwnedModel = model("pass_owned", PassOwned);
 module.exports = {
   PassModel,
   PassType,
+  PassInputType,
   PassOwnedModel,
   PassOwnedType,
   PassOwnedResolver,

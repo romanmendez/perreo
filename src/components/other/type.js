@@ -6,7 +6,7 @@ const vaccineFields = `
 const noteFields = `
   key: String!
   value: String!
-  active: Boolean!
+  isActive: Boolean!
 `;
 const VaccineType = `
   type Vaccine {

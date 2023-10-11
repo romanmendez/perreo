@@ -69,7 +69,6 @@ async function seed() {
     passesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
-      purchaseDate,
       expirationDate: DateTime.fromISO(purchaseDate.toISOString())
         .plus({ days: 30 })
         .toISO(),
@@ -141,10 +140,14 @@ async function seed() {
         : faker.date.between({ from: dateOfBirth, to: recentDate }),
       chip: faker.string.numeric(10),
       scan: faker.string.numeric(15),
-      owner,
-      notes: faker.lorem.lines(1),
+      notes: [
+        {
+          key: faker.color.human(),
+          value: faker.lorem.lines(1),
+          isActive: faker.datatype.boolean(),
+        },
+      ],
       passes: pass ? pass : [],
-      active: true,
     });
   }
 

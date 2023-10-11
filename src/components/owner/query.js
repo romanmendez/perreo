@@ -1,33 +1,15 @@
 const OwnerQueryType = `
-  owners(filter: OwnerFilter): [Owner!]!
-  owner(dni: String): Owner
-`;
-
-const OwnerQueryFilterType = `
-  input OwnerFilter {
-    id: ID
-    firstName: String
-    lastName: String
-    dni: String
-  }
+  owners(filter: OwnerInput): [Owner!]!
+  archiveOwners: [Owner!]
 `;
 
 const OwnerQueryResolver = {
   owners: async (parent, args, context) => {
-    const query = {};
-    if (args.filter) {
-      const { id, firstName, lastName, dni } = args.filter;
-
-      if (id) query._id = id;
-      if (firstName) query.firstName = firstName;
-      if (lastName) query.lastName = lastName;
-      if (dni) query.dni = dni;
-    }
-    return await context.model.owner.find(query);
+    return await context.model.owner.find({ ...args.filter, isActive: true });
   },
-  owner: async (parent, args, context) => {
-    return await context.model.owner.findOne({ dni: args.dni });
+  archiveOwners: async (parent, args, context) => {
+    return await context.model.owner.find({ isActive: false });
   },
 };
 
-module.exports = { OwnerQueryResolver, OwnerQueryType, OwnerQueryFilterType };
+module.exports = { OwnerQueryResolver, OwnerQueryType };

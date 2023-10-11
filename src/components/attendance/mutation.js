@@ -1,7 +1,6 @@
 const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 const { Duration } = require("luxon");
-const { PassOwned } = require("../../../graphql/resolvers");
-const { AttendanceModel, AttendanceResolver } = require("./model");
+const { PassMutationResolver } = require("../pass");
 
 const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
@@ -57,34 +56,35 @@ const AttendanceMutationResolver = {
       attendance.start,
       attendance.end
     );
-    const attendanceTimeInMinutes = Number(hours) * 60 + Number(minutes);
+    const attendanceMinutes = Number(hours) * 60 + Number(minutes);
 
-    let balance;
+    // check if there is a passOwned ID provided
     if (args.passOwnedId) {
-      if (attendance.passUsed)
+      // check if the attendance already has a passOwned associated to it
+      if (attendance.passUsed) {
         throw new Error("This attendance already has a pass associated to it");
-      // get pass and convert time to minutes
-      const passOwned = await context.model.passOwned
-        .findById(args.passOwnedId)
-        .populate("pass");
-      if (passOwned.active) {
-        const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
-        const timeNotCoveredByPass =
-          attendanceTimeInMinutes - passOwnedTimeInMinutes;
-        balance =
-          timeNotCoveredByPass > 0
-            ? Math.floor((Math.abs(timeNotCoveredByPass) / 60) * price)
-            : 0;
-
-        return await updateResolver(
-          "attendance",
-          {
-            id: args.id,
-            balance,
-            passUsed: args.passOwnedId,
-          },
+      } else {
+        const usePassOwned = await PassMutationResolver.usePassOwned(
+          parent,
+          { passOwnedId: args.passOwnedId, attendanceMinutes },
           context
         );
+        if (usePassOwned) {
+          // return attendance with updated balance and passOwned
+          return await updateResolver(
+            "attendance",
+            {
+              id: args.id,
+              balance: usePassOwned.balance,
+              passUsed: args.passOwnedId,
+            },
+            context
+          );
+        } else {
+          throw new Error(
+            "The pass provided is expired or has already been completely used"
+          );
+        }
       }
     } else if (args.payment) {
       if (attendance.balance === 0)

@@ -1,6 +1,7 @@
 const {
   PassType,
   PassModel,
+  PassInputType,
   PassOwnedType,
   PassOwnedModel,
   PassOwnedResolver,
@@ -11,6 +12,7 @@ const { PassMutationType, PassMutationResolver } = require("./mutation");
 module.exports = {
   PassType,
   PassModel,
+  PassInputType,
   PassOwnedType,
   PassOwnedModel,
   PassOwnedResolver,

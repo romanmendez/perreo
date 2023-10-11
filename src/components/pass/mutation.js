@@ -1,20 +1,17 @@
 const formatDuration = require("date-fns/formatDuration");
+const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
 
 const PassMutationType = `
-  createPass(
-    name: String!
-    totalDays: Int
-    hoursPerDay: Int!
-    price: Int!
-    expiration: Date
-  ): Pass!
+  createPass(input: PassInput!): Pass!
   sellPass(passId: String!, dogId: String!): PassOwned!
-  usePass(passId: String!): PassOwned!
+  usePassOwned(passOwnedId: String! attendanceMinutes: Int!): PassOwned!
+  updatePass(id: ID!, input: PassInput): Pass!
+  archivePass(id: ID!): Pass!
 `;
 
 const PassMutationResolver = {
   createPass: async (parent, args, context) => {
-    return await context.model.pass.create(args);
+    return await context.model.pass.create(args.input);
   },
   sellPass: async (parent, args, context) => {
     const dog = await context.model.dog.findById(args.dogId);
@@ -28,14 +25,52 @@ const PassMutationResolver = {
     const dogUpdate = await dog.updateOne({
       $push: { passes: passOwned },
     });
-    console.log(passOwned, dogUpdate);
     return passOwned;
   },
-  usePass: async (parent, args, context) => {
-    return await context.model.passOwned.findByIdAndUpdate(
-      args.passId,
-      { $inc: { daysUsed: +1 } },
-      { returnOriginal: false }
+  usePassOwned: async (parent, args, context) => {
+    // get passOwned and check if it's active
+    const passOwned = await context.model.passOwned
+      .findById(args.passOwnedId)
+      .populate("pass");
+    if (!passOwned.active) {
+      return null;
+    } else {
+      // if passOwned is active, caculate balance remaining after using hours from pass
+      const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
+      const timeNotCoveredByPass =
+        args.attendanceMinutes - passOwnedTimeInMinutes;
+      const balance =
+        timeNotCoveredByPass > 0
+          ? Math.floor((Math.abs(timeNotCoveredByPass) / 60) * price)
+          : 0;
+
+      // check daysUsed in pass and set as inactive if it's the last day
+      const lastDay = passOwned.daysUsed === passOwned.pass.totalDays - 1;
+      // update daysUsed in passOwned
+      const usedPassOwned = await updateResolver(
+        "passOwned",
+        {
+          id: args.passOwnedId,
+          daysUsed: passOwned.daysUsed + 1,
+          active: !lastDay,
+        },
+        context
+      );
+      return { passOwned: usedPassOwned, balance };
+    }
+  },
+  updatePass: async (parent, args, context) => {
+    return await updateResolver(
+      "pass",
+      { id: args.id, ...args.input },
+      context
+    );
+  },
+  archivePass: async (parent, args, context) => {
+    return await updateResolver(
+      "pass",
+      { id: args.id, isActive: false },
+      context
     );
   },
 };
