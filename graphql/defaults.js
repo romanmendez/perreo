@@ -9,6 +9,7 @@ async function updateResolver(model, args, context) {
 
 async function deleteResolver(model, args, context) {
   const { ok } = await context.model[model].deleteOne({ _id: args.id });
+  if (!ok) throw new Error("No record was found with this ID");
   return ok;
 }
 
