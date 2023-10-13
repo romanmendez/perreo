@@ -47,7 +47,7 @@ const PassOwned = new Schema(
     daysUsed: { type: Number, required: true },
     startDate: { type: Date, required: true },
     expirationDate: { type: Date },
-    active: { type: Boolean, required: true },
+    isActive: { type: Boolean, required: true },
   },
   {
     timestamps: true,
