@@ -11,8 +11,8 @@ const { BusinessDataModel } = require("../src/components/other");
 async function seed() {
   const dogs = [];
   const owners = [];
-  const passes = [];
-  const passesOwned = [];
+  const inactivePassesOwned = [];
+  const activePassesOwned = [];
   const businessData = [];
 
   // OWNERS: Create
@@ -24,67 +24,88 @@ async function seed() {
       phone: [faker.phone.number()],
       dni:
         faker.string.numeric(8) +
-        faker.string.alpha({ casing: "lower", length: 1 }),
+        faker.string.alpha({ casing: "upper", length: 1 }),
     });
   }
 
   // OWNERS: Populate
   const createdOwners = await populate("owners", OwnerModel, owners);
   const createdOwnersIds = createdOwners.map((owner) => owner._id);
-
-  // PASSES: Create
-  passes.push({
+  const monthlyPartTime = {
     name: "Mensual Media Jornada",
     totalDays: 30,
     hoursPerDay: 4,
     price: 100,
-  });
-  passes.push({
+  };
+  const monthlyFullTime = {
     name: "Mensual Jornada Completa",
     totalDays: 30,
     hoursPerDay: 8,
     price: 200,
-  });
-  passes.push({
+  };
+  const tenDayPartTime = {
     name: "10 dias Media Jornada",
     totalDays: 10,
     hoursPerDay: 4,
     price: 20,
-  });
-  passes.push({
+  };
+  const tenDayFullTime = {
     name: "10 dias Jornada Completa",
     totalDays: 10,
     hoursPerDay: 8,
     price: 50,
-  });
+  };
+
+  const passes = [
+    monthlyFullTime,
+    monthlyPartTime,
+    tenDayFullTime,
+    tenDayPartTime,
+  ];
+
+  // PASSES: Create
 
   // PASSES: Populate
   const createdPasses = await populate("passes", PassModel, passes);
 
-  // PASSESOWNED: Create
-  for (let i = 0; i < 3; i++) {
+  // PASSESOWNED: Create inactive passed
+  for (let i = 0; i < 10; i++) {
     const randomPass = createdPasses[Math.floor(Math.random() * passes.length)];
-    const purchaseDate = faker.date.soon({ days: randomPass.totalDays });
+    const purchaseDate = faker.date.past({ years: 1 });
 
-    passesOwned.push({
+    inactivePassesOwned.push({
       pass: randomPass._id,
       daysUsed: faker.number.int(randomPass.totalDays),
+      startDate: purchaseDate,
       expirationDate: DateTime.fromISO(purchaseDate.toISOString())
         .plus({ days: 30 })
         .toISO(),
-      active: true,
+      isActive: false,
     });
   }
 
+  // PASSESOWNED: Create active passes
+  createdPasses.forEach((pass) =>
+    activePassesOwned.push({
+      pass,
+      daysUsed: faker.number.int(pass.totalDays),
+      startDate: DateTime.now().minus({ days: 29 }),
+      expirationDate: DateTime.now().plus({ days: 1 }),
+      isActive: true,
+    })
+  );
+
   // PASSESOWNED: Populate
-  const createdPassesOwned = await populate(
-    "passes_owned",
-    PassOwnedModel,
-    passesOwned
-  );
-  const createdPassesOwnedIds = createdPassesOwned.map(
-    (createdPass) => createdPass._id
-  );
+  const createdPassesOwned = await populate("passes_owned", PassOwnedModel, [
+    ...inactivePassesOwned,
+    ...activePassesOwned,
+  ]);
+  const createdInactivePassesOwnedIds = createdPassesOwned
+    .filter((createdPass) => !createdPass.isActive)
+    .map((inactivePass) => inactivePass._id);
+  const createdActivePassesOwnedIds = createdPassesOwned
+    .filter((createdPass) => createdPass.isActive)
+    .map((activePass) => activePass._id);
 
   // DOGS: Create
   for (let i = 0; i < 5; i++) {
@@ -97,7 +118,11 @@ async function seed() {
     const fixed = faker.datatype.boolean();
     const ownersCopy = [...owners];
     const owner = createdOwnersIds.pop();
-    const pass = createdPassesOwnedIds.pop();
+    const pass = [
+      createdActivePassesOwnedIds.pop(),
+      createdInactivePassesOwnedIds.pop(),
+      createdInactivePassesOwnedIds.pop(),
+    ];
 
     dogs.push({
       name: faker.person.firstName(),
