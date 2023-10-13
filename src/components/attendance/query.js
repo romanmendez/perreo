@@ -5,7 +5,9 @@ jsDate.setTime(jsDate.getTime() + jsDate.getTimezoneOffset() * 60 * 1000);
 
 const AttendanceQueryType = `
   getAllAttendances(from: Date, to: Date): [Attendance!]
-  getCurrentAttendaces: [Attendance!]
+  getCurrentAttendances: [Attendance!]
+  getAttendanceByDog(dogId: String!): [Attendance!]
+  getAttendanceByPassUsed(passOwnedId: String!): [Attendance!]
 `;
 
 const AttendanceQueryResolver = {
@@ -23,8 +25,14 @@ const AttendanceQueryResolver = {
 
     return await context.model.attendance.find(query);
   },
-  getCurrentAttendaces: async (parent, args, context) => {
+  getCurrentAttendances: async (parent, args, context) => {
     return await context.model.attendance.find({ end: null });
+  },
+  getAttendanceByDog: async (parent, args, context) => {
+    return await context.model.attendance.find({ dog: args.dogId });
+  },
+  getAttendanceByPassUsed: async (parent, args, context) => {
+    return await context.model.attendance.find({ passUsed: args.passOwnedId });
   },
 };
 
