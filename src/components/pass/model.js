@@ -45,6 +45,7 @@ const PassOwned = new Schema(
   {
     pass: { type: Schema.Types.ObjectId, ref: "pass", required: true },
     daysUsed: { type: Number, required: true },
+    startDate: { type: Date, required: true },
     expirationDate: { type: Date },
     active: { type: Boolean, required: true },
   },
