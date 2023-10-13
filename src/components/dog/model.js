@@ -61,14 +61,14 @@ const DogResolver = {
   usedPasses: async (parent, args, context) => {
     const passes = await context.model.passOwned.find({
       _id: parent.passes,
-      active: false,
+      isActive: false,
     });
     return passes;
   },
   activePasses: async (parent, args, context) => {
     const passes = await context.model.passOwned.find({
       _id: parent.passes,
-      active: true,
+      isActive: true,
     });
     return passes;
   },
