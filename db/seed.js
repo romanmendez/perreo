@@ -14,6 +14,7 @@ async function seed() {
   const inactivePassesOwned = [];
   const activePassesOwned = [];
   const businessData = [];
+  const attendances = [];
 
   // OWNERS: Create
   for (let i = 0; i < 5; i++) {
@@ -179,9 +180,24 @@ async function seed() {
   // DOGS: Populate
   const createdDogs = await populate("dogs", DogModel, dogs);
 
-  await AttendanceModel.deleteMany({}, () =>
-    console.log("Attendances cleared")
-  );
+  // ATTENDANCES: Create
+  for (let i = 0; i < 10; i++) {
+    const randomDog =
+      createdDogs[Math.floor(Math.random() * createdDogs.length)];
+    const startTime = faker.date.past({ years: 1 });
+    const endTime = DateTime.fromISO(startTime.toISOString())
+      .plus({ hours: faker.number.int(9) })
+      .toISO();
+
+    attendances.push({
+      dog: randomDog,
+      start: startTime,
+      end: endTime,
+    });
+  }
+
+  // ATTENDANCE: Populate
+  await populate("attendance", AttendanceModel, attendances);
 
   // PRICE: Create
   businessData.push({
