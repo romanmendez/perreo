@@ -52,8 +52,8 @@ const DogType = `
 const DogInputType = `
    input DogInput {
     ${dogFields}
-    note: NoteInput
-    vaccine: VaccineInput
+    notes: [NoteInput]
+    vaccines: [VaccineInput]
    }
 `;
 
