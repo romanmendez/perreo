@@ -53,7 +53,6 @@ module.exports = {
     description: "Date custom scalar type",
     // value from client
     parseValue(value) {
-      console.log("date parser", value);
       const date = new Date(value);
       if (isNaN(date.getTime())) {
         throw new Error("Invalid date");
@@ -63,7 +62,6 @@ module.exports = {
 
     // value to client
     serialize(value) {
-      console.log("date parser", value);
       if (!(value instanceof Date) || isNaN(value.getTime())) {
         throw new Error("Invalid date");
       }
