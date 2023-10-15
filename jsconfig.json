@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@utils/*": ["utils/*"],
+      "@root": ["."],
+      "@graphql": ["./graphql"],
+      "@db": ["./db"],
+      "@utils": ["./utils"],
+      "@components": ["./src/components"]
+    }
+  },
+  "include": ["src/**/*"]
+}
