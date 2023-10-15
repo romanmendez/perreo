@@ -1,5 +1,5 @@
 const formatDuration = require("date-fns/formatDuration");
-const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
+const { updateResolver, deleteResolver } = require("@graphql/defaults");
 
 const PassMutationType = `
   createPass(input: PassInput!): Pass!

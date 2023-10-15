@@ -24,6 +24,7 @@
     "bcryptjs": "^2.4.3",
     "eslint": "^7.16.0",
     "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.3",
     "nodemon": "^2.0.6"
   },
   "scripts": {
@@ -33,5 +34,12 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "_moduleAliases": {
+    "@root": ".",
+    "@graphql": "./graphql",
+    "@db": "./db",
+    "@utils": "./utils",
+    "@components": "./src/components"
+  }
 }

@@ -1,93 +1,60 @@
-const sub = require("date-fns/sub");
-const { DogResolver } = require("../model");
-const {
-  parentBuilder,
-  contextBuilder,
-  attendanceBuilder,
-  ownerBuilder,
-} = require("utils/builders");
-const { AttendanceModel } = require("../../attendance");
+const { ApolloServer, gql } = require("apollo-server");
+const { createTestClient } = require("apollo-server-testing");
+const mongoose = require("mongoose");
+const { fakerES: faker } = require("@faker-js/faker");
+const { fakeDogBuilder } = require("@test/builders");
+const resolvers = require("@graphql/resolvers");
+const model = require("@db/models");
+const utils = require("@utils/index");
+const types = require("@graphql/types");
 
-beforeEach(() => jest.resetAllMocks());
-
-test(`DogResolver.attendances returns an array of attendances`, async () => {
-  const parent = parentBuilder();
-  const context = contextBuilder();
-  const fakeAttendances = [
-    attendanceBuilder({
-      overrides: { dog: { _id: parent.id } },
-    }),
-    attendanceBuilder({
-      overrides: { dog: { _id: parent.id } },
-    }),
-  ];
-  context.model.attendance.find.mockResolvedValueOnce(fakeAttendances);
-  const attendances = await DogResolver.attendances(parent, {}, context);
-
-  expect(context.model.attendance.find).toHaveBeenCalledTimes(1);
-  expect(context.model.attendance.find).toHaveBeenCalledWith({
-    dog: { _id: parent.id },
-  });
-  expect(attendances).toEqual(fakeAttendances);
-
-  context.model.attendance.find.mockResolvedValueOnce([]);
-  const noAttendance = await DogResolver.attendances(parent, {}, context);
-
-  expect(noAttendance).toEqual([]);
+const server = new ApolloServer({
+  typeDefs: types,
+  resolvers,
+  context: ({ req }) => {
+    return {
+      ...req,
+      utils,
+      model,
+    };
+  },
 });
 
-test(`DogResolver.owners returns an array of owners`, async () => {
-  const parent = parentBuilder();
-  const context = contextBuilder();
-  const fakeOwners = [
-    ownerBuilder({
-      overrides: { dogs: { _id: parent.id } },
-    }),
-    ownerBuilder({
-      overrides: { dogs: { _id: parent.id } },
-    }),
-  ];
-  context.model.owner.find.mockResolvedValueOnce(fakeOwners);
-  const owners = await DogResolver.owners(parent, {}, context);
-
-  expect(context.model.owner.find).toHaveBeenCalledTimes(1);
-  expect(context.model.owner.find).toHaveBeenCalledWith({
-    dogs: { _id: parent.id },
-  });
-  expect(owners).toEqual(fakeOwners);
-
-  context.model.owner.find.mockResolvedValueOnce([]);
-  const noOwners = await DogResolver.owners(parent, {}, context);
-
-  expect(noOwners).toEqual([]);
+beforeAll(() =>
+  mongoose.connect("mongodb://localhost:27017/perreo_test", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+  })
+);
+afterAll(async () => {
+  await mongoose.connection.dropDatabase();
+  await mongoose.connection.close();
 });
 
-test(`DogResolver.lastAttendance returns the most recent attendance or null`, async () => {
-  const parent = parentBuilder();
-  const context = contextBuilder();
-  const fakeAttendances = [
-    attendanceBuilder({
-      overrides: {
-        dog: { _id: parent.id },
-        start: sub(new Date(), { days: 5 }),
-      },
-    }),
-    attendanceBuilder({
-      overrides: {
-        dog: { _id: parent.id },
-        start: sub(new Date(), { days: 2 }),
-      },
-    }),
-  ];
+const { query, mutate } = createTestClient(server);
 
-  context.model.attendance.find.mockResolvedValueOnce(fakeAttendances);
-  const fakeLastAttendance = fakeAttendances[1];
-  const lastAttendance = await DogResolver.lastAttendance(parent, {}, context);
+test("dogs used passes resolver", async () => {
+  const [fakeDog] = fakeDogBuilder(1);
+  const createDogMutation = gql`
+    mutation CreateDog($input: DogInput) {
+      createDog(input: $input) {
+        name
+        breed
+        sex
+        dateOfBirth
+        profilePic
+        fixed
+        heat
+        chip
+        scan
+      }
+    }
+  `;
 
-  expect(lastAttendance).toEqual(fakeLastAttendance);
-
-  context.model.attendance.find.mockResolvedValueOnce([]);
-  const noAttendance = await DogResolver.lastAttendance(parent, {}, context);
-
-  expect(noAttendance).toBe(null);
+  const { data } = await mutate({
+    mutation: createDogMutation,
+    variables: { input: newDog },
+  });
+  expect(data.createDog.name).toEqual(fakeDog.name);
 });

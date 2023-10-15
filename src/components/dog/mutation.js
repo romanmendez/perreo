@@ -1,4 +1,4 @@
-const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
+const { updateResolver, deleteResolver } = require("@graphql/defaults");
 
 const DogMutationType = `
   createDog(input: DogInput): Dog!

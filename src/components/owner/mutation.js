@@ -1,4 +1,4 @@
-const { updateResolver } = require("../../../graphql/defaults.js");
+const { updateResolver } = require("@graphql/defaults.js");
 
 const OwnerMutationType = `
   createOwner(input: OwnerInput): Owner!

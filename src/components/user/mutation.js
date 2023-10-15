@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
-const { createToken } = require("../../../utils/auth");
-const { updateResolver } = require("../../../graphql/defaults");
+const { createToken } = require("@utils/auth");
+const { updateResolver } = require("@graphql/defaults");
 
 const UserMutationType = `
   createUser(email: String!, password: String!, name: String!, access: Int!): Auth!

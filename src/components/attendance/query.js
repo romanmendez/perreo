@@ -1,5 +1,5 @@
 const { DateTime } = require("luxon");
-const { totalHours } = require("../../../utils");
+const { totalHours } = require("@utils");
 const jsDate = new Date();
 jsDate.setTime(jsDate.getTime() + jsDate.getTimezoneOffset() * 60 * 1000);
 

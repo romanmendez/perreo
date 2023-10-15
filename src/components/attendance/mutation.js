@@ -1,4 +1,4 @@
-const { updateResolver, deleteResolver } = require("../../../graphql/defaults");
+const { updateResolver, deleteResolver } = require("@graphql/defaults");
 const { Duration } = require("luxon");
 const { PassMutationResolver } = require("../pass");
 

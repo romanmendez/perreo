@@ -12,4 +12,11 @@ module.exports = {
   ],
   collectCoverageFrom: ["**/src/**/*.js"],
   coveragePathIgnorePatterns: [".*/__tests__/.*"],
+  moduleNameMapper: {
+    "@graphql(.*)": "<rootDir>/graphql/$1",
+    "@db(.*)": "<rootDir>/db/$1",
+    "@utils(.*)": "<rootDir>/utils/$1",
+    "@components(.*)": "<rootDir>/src/components/$1",
+    "@test(.*)": "<rootDir>/test/$1",
+  },
 };
