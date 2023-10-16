@@ -18,5 +18,9 @@ module.exports = {
     "@utils(.*)": "<rootDir>/utils/$1",
     "@components(.*)": "<rootDir>/src/components/$1",
     "@test(.*)": "<rootDir>/test/$1",
+    "@dog(.*)": "<rootDir>/src/components/dog",
+    "@attendance(.*)": "<rootDir>/src/components/attendance",
+    "@owner(.*)": "<rootDir>/src/components/owner",
+    "@pass(.*)": "<rootDir>/src/components/pass",
   },
 };
