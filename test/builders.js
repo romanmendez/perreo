@@ -1,8 +1,8 @@
 const { fakerES: faker } = require("@faker-js/faker");
 
-function fakeDogBuilder(number) {
+function fakeDogBuilder(numberOfDogs) {
   const dogsBuilt = [];
-  for (let i = 0; i < number; i++) {
+  for (let i = 0; i < numberOfDogs; i++) {
     const dateOfBirth = faker.date.birthdate({
       min: 2010,
       max: 2022,
