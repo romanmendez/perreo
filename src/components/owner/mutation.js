@@ -27,7 +27,7 @@ const OwnerMutationResolver = {
       context
     );
   },
-  archiveDog: async (parent, args, context) => {
+  archiveOwner: async (parent, args, context) => {
     return await updateResolver(
       "owner",
       { id: args.id, isActive: false },
