@@ -10,7 +10,6 @@ const DogMutationResolver = {
   createDog: async (parent, args, context) => {
     const newDog = await context.model.dog.create({
       ...args.input,
-      active: true,
     });
     if (args.input.profilePic) {
       const { public_id } = await context.utils.uploadProfilePic(
