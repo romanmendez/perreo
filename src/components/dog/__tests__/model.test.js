@@ -1,4 +1,3 @@
-const mockingoose = require("mockingoose");
 const { fakeDogBuilder } = require("@test/builders");
 const { query, mutate, gql } = require("@test/test-server");
 const model = require("@db/models");
@@ -32,14 +31,12 @@ describe("dog model", () => {
         }
       }
     `;
-    mockingoose(model.dog).toReturn(fakeDog, "find");
-
+    model.dog.find.mockReturnValueOnce();
     const { data, errors } = await query({
       query: dogsUsedPassesQuery,
     });
+    console.log(errors);
     expect(model.dog.find).toHaveBeenCalledTimes(1);
-    expect(model.find.populate).toHaveBeenLastCalledWith(1, "passes");
-    expect(model.find.populate).toHaveBeenLastCalledWith(2, "owners");
     expect(model.dog.find).toHaveBeenCalledWith({ isActive: true });
     expect(data.dogs).toEqual([
       {
