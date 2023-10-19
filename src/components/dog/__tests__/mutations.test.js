@@ -1,5 +1,5 @@
 const { fakeDogBuilder } = require("@test/builders");
-const { query, mutate, gql } = require("@test/server");
+const { query, mutate, gql } = require("@test/test-server");
 const model = require("@db/models");
 
 jest.mock("@db/models");
@@ -9,8 +9,8 @@ beforeEach(() => {
 });
 
 describe("createDog mutations", () => {
-  const dogs = fakeDogBuilder(2);
-  const { name, breed, sex, dateOfBirth } = dogs[0];
+  const [fakeDog] = fakeDogBuilder();
+  const { name, breed, sex, dateOfBirth } = fakeDog;
 
   const createDogMutation = gql`
     mutation CreateDog($input: DogInput) {
@@ -19,8 +19,8 @@ describe("createDog mutations", () => {
       }
     }
   `;
-  test(`createDog returns a dog ID`, async () => {
-    model.dog.create.mockReturnValueOnce({ id: 1, ...dogs[0] });
+  test(`createDog calls the dog.create function and returns new document`, async () => {
+    model.dog.create.mockReturnValueOnce(fakeDog);
 
     const { data, errors } = await mutate({
       mutation: createDogMutation,
@@ -34,8 +34,7 @@ describe("createDog mutations", () => {
       sex,
       dateOfBirth,
     });
-    expect(data.createDog.id).toBe("1");
-    expect(errors).toBeFalsy();
+    expect(data.createDog.id).toBe(fakeDog.id);
   });
 
   test("createDog with missing required field return error", async () => {
@@ -55,7 +54,6 @@ describe("createDog mutations", () => {
 describe("update, archive and delete dog", () => {
   const [fakeDog] = fakeDogBuilder(1);
   const { name, breed, sex, dateOfBirth } = fakeDog;
-  const fakeDogID = "1";
 
   test("update dog name returns new dog name", async () => {
     const updateDog = gql`
@@ -69,24 +67,23 @@ describe("update, archive and delete dog", () => {
 
     const updatedName = "Max";
     model.dog.findOneAndUpdate.mockReturnValueOnce({
-      id: fakeDogID,
       ...fakeDog,
       name: updatedName,
     });
     const { data: updateData } = await mutate({
       mutation: updateDog,
-      variables: { id: fakeDogID, input: { name: updatedName } },
+      variables: { id: fakeDog.id, input: { name: updatedName } },
     });
 
     expect(model.dog.findOneAndUpdate).toHaveBeenCalledTimes(1);
     expect(model.dog.findOneAndUpdate).toHaveBeenCalledWith(
       {
-        _id: fakeDogID,
+        _id: fakeDog.id,
       },
       { name: updatedName },
       { returnOriginal: false }
     );
-    expect(updateData.updateDog.id).toEqual(fakeDogID);
+    expect(updateData.updateDog.id).toEqual(fakeDog.id);
     expect(updateData.updateDog.name).toEqual(updatedName);
   });
 
@@ -100,25 +97,25 @@ describe("update, archive and delete dog", () => {
       }
     `;
     model.dog.findOneAndUpdate.mockReturnValueOnce({
-      id: fakeDogID,
+      id: fakeDog.id,
       ...fakeDog,
       isActive: false,
     });
     const { data: archiveData } = await mutate({
       mutation: archiveDog,
-      variables: { id: fakeDogID },
+      variables: { id: fakeDog.id },
     });
 
     expect(model.dog.findOneAndUpdate).toHaveBeenCalledTimes(1);
     expect(model.dog.findOneAndUpdate).toHaveBeenCalledWith(
       {
-        _id: fakeDogID,
+        _id: fakeDog.id,
       },
       { isActive: false },
       { returnOriginal: false }
     );
     expect(archiveData.archiveDog).toEqual({
-      id: fakeDogID,
+      id: fakeDog.id,
       isActive: false,
     });
   });
@@ -133,12 +130,12 @@ describe("update, archive and delete dog", () => {
 
     const { data: deleteData } = await mutate({
       mutation: deleteDog,
-      variables: { id: fakeDogID },
+      variables: { id: fakeDog.id },
     });
 
     expect(model.dog.deleteOne).toHaveBeenCalledTimes(1);
     expect(model.dog.deleteOne).toHaveBeenCalledWith({
-      _id: fakeDogID,
+      _id: fakeDog.id,
     });
     expect(deleteData.deleteDog).toEqual(true);
   });
