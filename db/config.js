@@ -5,7 +5,6 @@ mongoose
   .connect(dbUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false,
   })
   .then((x) => {
     console.log(
