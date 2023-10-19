@@ -15,7 +15,7 @@
     "luxon": "^1.25.0",
     "mockingoose": "^2.13.2",
     "moment": "^2.29.1",
-    "mongoose": "^5.11.8",
+    "mongoose": "^7.6.3",
     "sharp": "^0.27.0"
   },
   "devDependencies": {
