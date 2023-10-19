@@ -1,60 +1,93 @@
-const { ApolloServer, gql } = require("apollo-server");
-const { createTestClient } = require("apollo-server-testing");
-const mongoose = require("mongoose");
-const { fakerES: faker } = require("@faker-js/faker");
 const { fakeDogBuilder } = require("@test/builders");
-const resolvers = require("@graphql/resolvers");
+const { query, mutate, gql } = require("@test/test-server");
 const model = require("@db/models");
-const utils = require("@utils/index");
-const types = require("@graphql/types");
 
-const server = new ApolloServer({
-  typeDefs: types,
-  resolvers,
-  context: ({ req }) => {
-    return {
-      ...req,
-      utils,
-      model,
-    };
-  },
+jest.mock("@db/models");
+
+beforeEach(() => {
+  jest.clearAllMocks();
 });
 
-beforeAll(() =>
-  mongoose.connect("mongodb://localhost:27017/perreo_test", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-  })
-);
-afterAll(async () => {
-  await mongoose.connection.dropDatabase();
-  await mongoose.connection.close();
-});
-
-const { query, mutate } = createTestClient(server);
-
-test("dogs used passes resolver", async () => {
-  const [fakeDog] = fakeDogBuilder(1);
-  const createDogMutation = gql`
-    mutation CreateDog($input: DogInput) {
-      createDog(input: $input) {
-        name
-        breed
-        sex
-        dateOfBirth
-        profilePic
-        fixed
-        heat
-        chip
-        scan
-      }
-    }
-  `;
-
-  const { data } = await mutate({
-    mutation: createDogMutation,
-    variables: { input: newDog },
+describe("dog model", () => {
+  const [fakeDog] = fakeDogBuilder({
+    numberOfDogs: 1,
+    numberOfUsedPasses: 1,
+    numberOfActivePasses: 1,
+    numberOfOwners: 2,
   });
-  expect(data.createDog.name).toEqual(fakeDog.name);
+
+  test("check for UsedPasses", async () => {
+    const [fakeDogUsedPass] = fakeDog.passes.filter((pass) => !pass.isActive);
+    const dogsUsedPassesQuery = gql`
+      query DogsUsedPassed {
+        dogs {
+          id
+          name
+          passes(isActive: false) {
+            daysUsed
+            expirationDate
+            isActive
+          }
+        }
+      }
+    `;
+    model.dog.find.mockReturnValueOnce();
+    const { data, errors } = await query({
+      query: dogsUsedPassesQuery,
+    });
+    console.log(errors);
+    expect(model.dog.find).toHaveBeenCalledTimes(1);
+    expect(model.dog.find).toHaveBeenCalledWith({ isActive: true });
+    expect(data.dogs).toEqual([
+      {
+        id: fakeDog.id,
+        name: fakeDog.name,
+        usedPasses: [
+          {
+            daysUsed: fakeDogUsedPass.daysUsed,
+            expirationDate: fakeDogUsedPass.expirationDate,
+            isActive: false,
+          },
+        ],
+      },
+    ]);
+  });
+  test("check for ActivePasses", async () => {
+    const [fakeDogUsedPass] = fakeDog.passes.filter((pass) => pass.isActive);
+    const dogsUsedPassesQuery = gql`
+      query DogsUsedPassed {
+        dogs {
+          id
+          name
+          passes(isActive: true) {
+            daysUsed
+            expirationDate
+            isActive
+          }
+        }
+      }
+    `;
+    model.dog.find.mockReturnValueOnce([fakeDog]);
+    model.passOwned.find.mockReturnValueOnce([fakeDogUsedPass]);
+
+    const { data } = await query({
+      query: dogsUsedPassesQuery,
+    });
+
+    expect(model.dog.find).toHaveBeenCalledTimes(1);
+    expect(model.dog.find).toHaveBeenCalledWith({ isActive: true });
+    expect(data.dogs).toEqual([
+      {
+        id: fakeDog.id,
+        name: fakeDog.name,
+        activePasses: [
+          {
+            daysUsed: fakeDogUsedPass.daysUsed,
+            expirationDate: fakeDogUsedPass.expirationDate,
+            isActive: true,
+          },
+        ],
+      },
+    ]);
+  });
 });

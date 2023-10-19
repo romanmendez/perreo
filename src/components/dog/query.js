@@ -9,7 +9,10 @@ const DogQueryType = `
 
 const DogQueryResolver = {
   dogs: async (parent, args, context) => {
-    return await context.model.dog.find({ ...args.filter, isActive: true });
+    return await context.model.dog
+      .find({ ...args.filter, isActive: true })
+      .populate("passes")
+      .populate("owners");
   },
   dogsCurrently: async (parent, args, context) => {
     const attendances = await context.model.attendance

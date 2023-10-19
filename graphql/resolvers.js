@@ -65,7 +65,7 @@ module.exports = {
       if (!(value instanceof Date) || isNaN(value.getTime())) {
         throw new Error("Invalid date");
       }
-      return format(value, "dd/MM/yyyy");
+      return value;
     },
     parseLiteral(ast) {
       if (ast.kind === Kind.STRING) {

@@ -1,3 +1,4 @@
+require("module-alias/register");
 require("./config");
 const mongoose = require("mongoose");
 const { fakerES: faker } = require("@faker-js/faker");
@@ -32,6 +33,8 @@ async function seed() {
   // OWNERS: Populate
   const createdOwners = await populate("owners", OwnerModel, owners);
   const createdOwnersIds = createdOwners.map((owner) => owner._id);
+
+  // PASSES: Create
   const monthlyPartTime = {
     name: "Mensual Media Jornada",
     totalDays: 30,
@@ -63,8 +66,6 @@ async function seed() {
     tenDayFullTime,
     tenDayPartTime,
   ];
-
-  // PASSES: Create
 
   // PASSES: Populate
   const createdPasses = await populate("passes", PassModel, passes);
@@ -174,6 +175,7 @@ async function seed() {
         },
       ],
       passes: pass ? pass : [],
+      owners: [owner],
     });
   }
 

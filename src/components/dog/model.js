@@ -45,8 +45,7 @@ const DogType = `
     notes: [Note]
     vaccines: [Vaccine]
     owners: [Owner]
-    usedPasses: [PassOwned]
-    activePasses: [PassOwned]
+    passes(isActive: Boolean): [PassOwned]
   }
   `;
 const DogInputType = `
@@ -58,25 +57,11 @@ const DogInputType = `
 `;
 
 const DogResolver = {
-  usedPasses: async (parent, args, context) => {
-    const passes = await context.model.passOwned.find({
-      _id: parent.passes,
-      isActive: false,
-    });
-    return passes;
-  },
-  activePasses: async (parent, args, context) => {
-    const passes = await context.model.passOwned.find({
-      _id: parent.passes,
-      isActive: true,
-    });
-    return passes;
-  },
-  owners: async (parent, args, context) => {
-    return await context.model.owner.find({ _id: parent.owners });
-  },
-  profilePic: async (parent, args, context) => {
-    return await context.utils.getProfilePic(`${parent.id}/profile`);
+  passes: (parent, args, context) => {
+    if (args.isActive) return parent.passes.filter((pass) => pass.isActive);
+    if (args.isActive === false)
+      return parent.passes.filter((pass) => !pass.isActive);
+    return parent.passes;
   },
 };
 
