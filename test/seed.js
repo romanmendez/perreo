@@ -1,12 +1,13 @@
-require("./config");
+require("module-alias/register");
+require("../db/config");
 const mongoose = require("mongoose");
 const { fakerES: faker } = require("@faker-js/faker");
 const { DateTime } = require("luxon");
-const { DogModel } = require("../src/components/dog");
-const { OwnerModel } = require("../src/components/owner");
-const { PassModel, PassOwnedModel } = require("../src/components/pass");
-const { AttendanceModel } = require("../src/components/attendance");
-const { BusinessDataModel } = require("../src/components/other");
+const { DogModel } = require("@dog");
+const { OwnerModel } = require("@owner");
+const { PassModel, PassOwnedModel } = require("@pass");
+const { AttendanceModel } = require("@attendance");
+const { BusinessDataModel } = require("@other");
 
 async function seed() {
   const dogs = [];
@@ -32,6 +33,8 @@ async function seed() {
   // OWNERS: Populate
   const createdOwners = await populate("owners", OwnerModel, owners);
   const createdOwnersIds = createdOwners.map((owner) => owner._id);
+
+  // PASSES: Create
   const monthlyPartTime = {
     name: "Mensual Media Jornada",
     totalDays: 30,
@@ -63,8 +66,6 @@ async function seed() {
     tenDayFullTime,
     tenDayPartTime,
   ];
-
-  // PASSES: Create
 
   // PASSES: Populate
   const createdPasses = await populate("passes", PassModel, passes);
@@ -174,6 +175,7 @@ async function seed() {
         },
       ],
       passes: pass ? pass : [],
+      owners: [owner],
     });
   }
 
@@ -213,7 +215,8 @@ async function seed() {
 async function populate(name, model, array) {
   try {
     // clear data from DB
-    await model.deleteMany({}, () => console.log(`${name} cleared`));
+    const { deletedCount } = await model.deleteMany({});
+    console.log(`cleared ${deletedCount} ${name}`);
 
     // create new data
     const dbData = await model.create(array);

@@ -15,11 +15,12 @@
     "luxon": "^1.25.0",
     "mockingoose": "^2.13.2",
     "moment": "^2.29.1",
-    "mongoose": "^5.11.8",
+    "mongoose": "^7.6.3",
     "sharp": "^0.27.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.1.0",
+    "@types/jest": "^29.5.6",
     "apollo-server-testing": "^2.25.3",
     "bcryptjs": "^2.4.3",
     "eslint": "^7.16.0",
@@ -30,7 +31,7 @@
   "scripts": {
     "start": "nodemon -e graphql,prisma,js,json server.js",
     "test": "jest --watch",
-    "seed": "node ./db/seed.js"
+    "seed": "node ./test/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -40,6 +41,12 @@
     "@graphql": "./graphql",
     "@db": "./db",
     "@utils": "./utils",
-    "@components": "./src/components"
+    "@components": "./src/components",
+    "@dog": "./src/components/dog/index",
+    "@attendance": "./src/components/attendance/index",
+    "@owner": "./src/components/owner/index",
+    "@pass": "./src/components/pass/index",
+    "@user": "./src/components/user/index",
+    "@other": "./src/components/other/index"
   }
 }
