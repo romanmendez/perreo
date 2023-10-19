@@ -25,7 +25,7 @@ const PassOwnedType = `
     daysUsed: Int!
     createdAt: Date
     expirationDate: Date
-    active: Boolean!
+    isActive: Boolean!
   }
 `;
 
