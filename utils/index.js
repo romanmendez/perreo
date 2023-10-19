@@ -6,7 +6,7 @@ const {
   balance,
   getPrice,
   usePassOwned,
-} = require("./date-time");
+} = require("./helpers");
 const { uploadProfilePic, getProfilePic } = require("./image");
 
 module.exports = {
