@@ -1,4 +1,5 @@
 const { DateTime, Duration } = require("luxon");
+const { updateResolver } = require("@graphql/defaults");
 
 function daysBetween(start, end) {
   return start.getDate() - end.getDate() * 24 * 60 * 60000;
@@ -28,6 +29,49 @@ async function getPrice(context) {
   return price;
 }
 
+function getAttendanceMinutes(attendance) {
+  const { hours, minutes } = duration(attendance.start, attendance.end);
+  return Number(hours) * 60 + Number(minutes);
+}
+
+function remainingBalanceAfterPass(passOwned, attendance, price) {
+  const attendanceMinutes = getAttendanceMinutes(attendance);
+  const passOwnedTimeInMinutes = Number(passOwned.pass.hoursPerDay) * 60;
+
+  const timeNotCoveredByPass = attendanceMinutes - passOwnedTimeInMinutes;
+
+  const balance =
+    timeNotCoveredByPass > 0
+      ? Math.floor((Math.abs(timeNotCoveredByPass) / 60) * price)
+      : 0;
+  return balance;
+}
+
+async function usePassOwned(context, passOwned, attendance) {
+  // get passOwned and check if it's active;
+  const price = await getPrice(context);
+
+  if (!passOwned.isActive) {
+    return { passUsed: false };
+  } else {
+    // if passOwned is active, caculate balance remaining after using hours from pass
+    const balance = remainingBalanceAfterPass(passOwned, attendance, price);
+    // check daysUsed in pass and set as inactive if it's the last day
+    const lastDay = passOwned.daysUsed === passOwned.pass.totalDays - 1;
+    // update daysUsed in passOwned
+    const usedPassOwned = await updateResolver(
+      "passOwned",
+      {
+        id: passOwned._id,
+        daysUsed: passOwned.daysUsed + 1,
+        isActive: !lastDay,
+      },
+      context
+    );
+    return { passUsed: usedPassOwned, balance };
+  }
+}
+
 function timeFromNow(number, period) {
   const start = DateTime.local()
     .startOf(period)
@@ -49,4 +93,11 @@ function totalDuration(attendancesArray) {
   return sum.normalize().toObject();
 }
 
-module.exports = { duration, timeFromNow, totalDuration, balance, getPrice };
+module.exports = {
+  duration,
+  timeFromNow,
+  totalDuration,
+  balance,
+  getPrice,
+  usePassOwned,
+};

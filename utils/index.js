@@ -5,6 +5,7 @@ const {
   totalDuration,
   balance,
   getPrice,
+  usePassOwned,
 } = require("./date-time");
 const { uploadProfilePic, getProfilePic } = require("./image");
 
@@ -14,6 +15,7 @@ module.exports = {
   duration,
   balance,
   getPrice,
+  usePassOwned,
   timeFromNow,
   totalDuration,
   uploadProfilePic,

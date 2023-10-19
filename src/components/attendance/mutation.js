@@ -1,4 +1,5 @@
 const { updateResolver, deleteResolver } = require("@graphql/defaults");
+const { usePassOwned } = require("@utils");
 const { Duration } = require("luxon");
 const { PassMutationResolver } = require("../pass");
 
@@ -52,11 +53,6 @@ const AttendanceMutationResolver = {
   payAttendance: async (parent, args, context) => {
     const attendance = await context.model.attendance.findById(args.id);
     const price = await context.utils.getPrice(context);
-    const { hours, minutes } = context.utils.duration(
-      attendance.start,
-      attendance.end
-    );
-    const attendanceMinutes = Number(hours) * 60 + Number(minutes);
 
     // check if there is a passOwned ID provided
     if (args.passOwnedId) {
@@ -64,18 +60,25 @@ const AttendanceMutationResolver = {
       if (attendance.passUsed) {
         throw new Error("This attendance already has a pass associated to it");
       } else {
-        const usePassOwned = await PassMutationResolver.usePassOwned(
-          parent,
-          { passOwnedId: args.passOwnedId, attendanceMinutes },
-          context
+        const passOwned = await context.model.passOwned.findById(
+          args.passOwnedId
         );
-        if (usePassOwned) {
+        const { passUsed, balance } = await usePassOwned(
+          context,
+          passOwned,
+          attendance
+        );
+        console.log(
+          passUsed,
+          await usePassOwned(context, passOwned, attendance)
+        );
+        if (passUsed) {
           // return attendance with updated balance and passOwned
           return await updateResolver(
             "attendance",
             {
               id: args.id,
-              balance: usePassOwned.balance,
+              balance,
               passUsed: args.passOwnedId,
             },
             context
