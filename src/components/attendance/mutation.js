@@ -68,10 +68,6 @@ const AttendanceMutationResolver = {
           passOwned,
           attendance
         );
-        console.log(
-          passUsed,
-          await usePassOwned(context, passOwned, attendance)
-        );
         if (passUsed) {
           // return attendance with updated balance and passOwned
           return await updateResolver(
