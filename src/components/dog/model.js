@@ -9,8 +9,8 @@ const Dog = new Schema(
     sex: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
     vaccines: { type: Object },
-    fixed: { type: Boolean },
-    heat: { type: Date },
+    isFixed: { type: Boolean },
+    lastHeat: { type: Date },
     chip: { type: String },
     scan: String,
     owners: [{ type: Schema.Types.ObjectId, ref: "owner" }],
@@ -31,8 +31,8 @@ const dogFields = `
   sex: String
   dateOfBirth: Date
   profilePic: String
-  fixed: Boolean
-  heat: Date
+  isFixed: Boolean
+  lastHeat: Date
   chip: String
   scan: String
 `;
