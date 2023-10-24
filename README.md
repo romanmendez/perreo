@@ -141,7 +141,7 @@ The object used to store the different types of passes the daycare offers to its
 
 ```javascript
 "passes": [
-    {
+      {
         "id": "6537a043424e8f55e2e61ed4",
         "name": "Monthly Full Time",
         "totalDays": 30,
