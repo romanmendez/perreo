@@ -50,6 +50,7 @@ const DogType = `
   `;
 const DogInputType = `
    input DogInput {
+    _id: String
     ${dogFields}
     notes: [NoteInput]
     vaccines: [VaccineInput]
