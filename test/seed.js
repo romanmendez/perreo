@@ -117,7 +117,7 @@ async function seed() {
       mode: "year",
     });
     const recentDate = faker.date.recent();
-    const fixed = faker.datatype.boolean();
+    const isFixed = faker.datatype.boolean();
     const ownersCopy = [...owners];
     const owner = createdOwnersIds.pop();
     const pass = [
@@ -161,8 +161,8 @@ async function seed() {
           }),
         },
       ],
-      fixed,
-      heat: fixed
+      isFixed,
+      lastHeat: isFixed
         ? null
         : faker.date.between({ from: dateOfBirth, to: recentDate }),
       chip: faker.string.numeric(10),
