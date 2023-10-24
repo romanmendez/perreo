@@ -51,37 +51,45 @@ const AttendanceMutationResolver = {
     );
   },
   payAttendance: async (parent, args, context) => {
-    const attendance = await context.model.attendance.findById(args.id);
+    const attendance = await context.model.attendance
+      .findById(args.id)
+      .populate("dog");
     const price = await context.utils.getPrice(context);
 
-    // check if there is a passOwned ID provided
     if (args.passOwnedId) {
-      // check if the attendance already has a passOwned associated to it
       if (attendance.passUsed) {
         throw new Error("This attendance already has a pass associated to it");
       } else {
         const passOwned = await context.model.passOwned.findById(
           args.passOwnedId
         );
-        const { passUsed, balance } = await usePassOwned(
-          context,
-          passOwned,
-          attendance
+        const passIsOwnedByDog = attendance.dog.passes.includes(
+          args.passOwnedId
         );
-        if (passUsed) {
-          // return attendance with updated balance and passOwned
-          return await updateResolver(
-            "attendance",
-            {
-              id: args.id,
-              balance,
-              passUsed: args.passOwnedId,
-            },
-            context
+        if (passIsOwnedByDog) {
+          const { passUsed, balance } = await usePassOwned(
+            context,
+            passOwned,
+            attendance
           );
+          if (passUsed) {
+            return await updateResolver(
+              "attendance",
+              {
+                id: args.id,
+                balance,
+                passUsed: args.passOwnedId,
+              },
+              context
+            );
+          } else {
+            throw new Error(
+              "The pass provided is expired or has already been completely used"
+            );
+          }
         } else {
           throw new Error(
-            "The pass provided is expired or has already been completely used"
+            "The pass provided is not owned by the dog that created this attendance"
           );
         }
       }

@@ -38,24 +38,28 @@ async function seed() {
   const monthlyPartTime = {
     name: "Mensual Media Jornada",
     totalDays: 30,
+    daysToExpiration: 30,
     hoursPerDay: 4,
     price: 100,
   };
   const monthlyFullTime = {
     name: "Mensual Jornada Completa",
     totalDays: 30,
+    daysToExpiration: 0,
     hoursPerDay: 8,
     price: 200,
   };
   const tenDayPartTime = {
     name: "10 dias Media Jornada",
     totalDays: 10,
+    daysToExpiration: 120,
     hoursPerDay: 4,
     price: 20,
   };
   const tenDayFullTime = {
     name: "10 dias Jornada Completa",
     totalDays: 10,
+    daysToExpiration: 120,
     hoursPerDay: 8,
     price: 50,
   };
@@ -92,7 +96,7 @@ async function seed() {
       pass,
       daysUsed: faker.number.int(pass.totalDays),
       startDate: DateTime.now().minus({ days: 29 }),
-      expirationDate: DateTime.now().plus({ days: 1 }),
+      expirationDate: DateTime.now().plus({ days: pass.daysToExpiration }),
       isActive: true,
     })
   );

@@ -3,6 +3,7 @@ const { Schema, model } = require("mongoose");
 const passFields = `
   name: String
   totalDays: Int
+  daysToExpiration: Int
   hoursPerDay: Int
   price: Int
 `;
@@ -33,6 +34,7 @@ const Pass = new Schema(
   {
     name: { type: String, required: true },
     totalDays: { type: Number, required: true },
+    daysToExpiration: { type: Number, required: true },
     hoursPerDay: { type: Number, required: true },
     price: { type: Number, required: true },
     isActive: { type: Boolean, default: true },

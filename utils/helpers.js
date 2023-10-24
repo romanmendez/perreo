@@ -48,23 +48,26 @@ function remainingBalanceAfterPass(passOwned, attendance, price) {
 }
 
 async function usePassOwned(context, passOwned, attendance) {
-  // get passOwned and check if it's active;
   const price = await getPrice(context);
 
   if (!passOwned.isActive) {
     return { passUsed: false };
   } else {
-    // if passOwned is active, caculate balance remaining after using hours from pass
+    // caculate balance remaining after using hours from pass
     const balance = remainingBalanceAfterPass(passOwned, attendance, price);
-    // check daysUsed in pass and set as inactive if it's the last day
+
+    // check days used and expiration date
     const lastDay = passOwned.daysUsed === passOwned.pass.totalDays - 1;
+    const expired =
+      passOwned.expirationDate.toDateString() === new Date().toDateString();
+
     // update daysUsed in passOwned
     const usedPassOwned = await updateResolver(
       "passOwned",
       {
         id: passOwned._id,
         daysUsed: passOwned.daysUsed + 1,
-        isActive: !lastDay,
+        isActive: !lastDay && !expired,
       },
       context
     );
