@@ -24,7 +24,7 @@ const PassOwnedType = `
     id: ID!
     pass: Pass!
     daysUsed: Int!
-    createdAt: Date
+    startDate: Date
     expirationDate: Date
     isActive: Boolean!
   }

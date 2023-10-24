@@ -139,8 +139,38 @@ The object used to store the different types of passes the daycare offers to its
 - daysToExpiration: the number of days from the purchase date until the pass becomes invalid, regardless of the days used.
 - hybrid: a combination of both the above options. If totalDays is reached before daysToExpiration, the pass will become inactive, and vice versa.
 
+```javascript
+"passes": [
+    {
+        "id": "6537a043424e8f55e2e61ed4",
+        "name": "Monthly Full Time",
+        "totalDays": 30,
+        "daysToExpiration": 30,
+        "hoursPerDay": 8,
+        "price": 200,
+        "isActive": true
+      }
+]
+```
+
 PassOwned
 When an owner purchases a pasa for their dog a PassOwned entry is created with the type of pass that was purchased, a startDate that defaults to the date of the purchase if not specified, and the two variables that keep track of the when the pass is no longer valid: daysUsed and expirationDate.
+
+```javascript
+"passesOwned": [
+      {
+        "id": "6537a044424e8f55e2e61edd",
+        "pass": {
+          "id": "6537a043424e8f55e2e61ed6",
+          "name": "10 dias Jornada Completa"
+        },
+        "daysUsed": 3,
+        "startDate": "2022-12-07T17:10:27.267Z",
+        "expirationDate": "2023-01-06T17:10:27.267Z",
+        "isActive": false
+      }
+]
+```
 
 ## Features
 
