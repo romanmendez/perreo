@@ -2,14 +2,15 @@ const { updateResolver, deleteResolver } = require("@graphql/defaults");
 const { usePassOwned } = require("@utils");
 const { Duration } = require("luxon");
 const { PassMutationResolver } = require("../pass");
+const { isNull } = require("lodash");
 
 const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!
   endAttendance(dogId: String!): Attendance!
-  payAttendance(id: String!, passOwnedId: String, payment: Int): Attendance!
+  payAttendance(id: String!, passOwnedId: String, payment: Int, note: String): Attendance!
   cancelAttendanceBalance(id: String!): Attendance!
-  createAttendance(dogId: String!, start: Date!, end: Date!): Attendance!
-  updateAttendance(id: String!, start: Date, end: Date): Attendance!
+  createAttendance(dogId: String!, startTime: Date!, endTime: Date!): Attendance!
+  updateAttendance(id: String!, startTime: Date, endTime: Date): Attendance!
   deleteAttendance(id: String!): Int!
 `;
 
@@ -18,35 +19,38 @@ const AttendanceMutationResolver = {
     // check to see if dog has already checked in
     const existingAttendance = await context.model.attendance.findOne({
       dog: args.dogId,
-      end: null,
+      endTime: null,
     });
 
     if (existingAttendance)
       throw new Error("This dog already has an active attendance.");
 
     // create new chekin
-    const start = new Date();
+    const startTime = new Date();
 
     return await context.model.attendance.create({
-      start,
+      startTime,
       dog: args.dogId,
       payment: null,
       balance: 0,
     });
   },
   endAttendance: async (parent, args, context) => {
-    const end = new Date();
+    const endTime = new Date();
     const price = await context.utils.getPrice(context);
     const attendance = await context.model.attendance.findOne({
       dog: args.dogId,
-      end: null,
+      endTime: null,
     });
     if (!attendance)
       throw new Error("This dog doesn't have any active attendances");
 
     return await context.model.attendance.findOneAndUpdate(
       { _id: attendance._id },
-      { end, balance: context.utils.balance(attendance.start, end, price) },
+      {
+        endTime,
+        balance: context.utils.balance(attendance.startTime, endTime, price),
+      },
       { returnOriginal: false }
     );
   },
@@ -78,7 +82,10 @@ const AttendanceMutationResolver = {
               {
                 id: args.id,
                 balance,
-                passUsed: args.passOwnedId,
+                passUsed: passOwned,
+                $push: {
+                  notes: args.note,
+                },
               },
               context
             );

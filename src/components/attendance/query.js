@@ -23,7 +23,10 @@ const AttendanceQueryResolver = {
       }
     }
 
-    return await context.model.attendance.find(query);
+    return await context.model.attendance
+      .find(query)
+      .populate("passUsed")
+      .populate("dog");
   },
   getCurrentAttendances: async (parent, args, context) => {
     return await context.model.attendance.find({ end: null });

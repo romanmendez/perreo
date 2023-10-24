@@ -142,6 +142,7 @@ async function seed() {
             from: dateOfBirth,
             to: recentDate,
           }),
+          nextDue: faker.date.future({ years: 1 }),
         },
         {
           name: "distemper",
@@ -149,6 +150,7 @@ async function seed() {
             from: dateOfBirth,
             to: recentDate,
           }),
+          nextDue: faker.date.future({ years: 1 }),
         },
         {
           name: "multipurpose",
@@ -156,6 +158,7 @@ async function seed() {
             from: dateOfBirth,
             to: recentDate,
           }),
+          nextDue: faker.date.future({ years: 1 }),
         },
         {
           name: "rabies",
@@ -163,6 +166,7 @@ async function seed() {
             from: dateOfBirth,
             to: recentDate,
           }),
+          nextDue: faker.date.future({ years: 1 }),
         },
       ],
       isFixed,
@@ -197,8 +201,9 @@ async function seed() {
 
     attendances.push({
       dog: randomDog,
-      start: startTime,
-      end: endTime,
+      startTime,
+      endTime,
+      balance: 0,
     });
   }
 
