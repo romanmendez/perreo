@@ -1,6 +1,6 @@
-const path = require("path");
+import path from "path";
 
-module.exports = {
+export default {
   roots: [path.join(__dirname, "./")],
   rootDir: path.join(__dirname, "."),
   testEnvironment: "node",

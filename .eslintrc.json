@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "no-console": "off",
+    "import/no-cycle": "off",
+    "import/no-extraneous-dependencies": "off",
+    "babel/new-cap": "off",
+    "require-await": "warn",
+    "comma-dangle": ["warn", "always-multiline"]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**"],
+      "rules": {
+        "jest/prefer-todo": "off"
+      }
+    }
+  ]
+}

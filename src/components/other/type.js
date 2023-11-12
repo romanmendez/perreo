@@ -2,33 +2,33 @@ const vaccineFields = `
   name: String!
   dateAdministered: Date!
   nextDue: Date
-`;
+`
 const noteFields = `
   key: String!
   value: String!
   isActive: Boolean!
-`;
-const VaccineType = `
+`
+export const VaccineType = `
   type Vaccine {
     ${vaccineFields}
   }
-`;
-const VaccineInputType = `
+`
+export const VaccineInputType = `
   input VaccineInput {
     ${vaccineFields}
   }
-`;
-const NoteType = `
+`
+export const NoteType = `
   type Note {
     ${noteFields}
   }
-`;
-const NoteInputType = `
+`
+export const NoteInputType = `
   input NoteInput {
     ${noteFields}
   }
-`;
-const AddressType = `
+`
+export const AddressType = `
   type Address {
     id: ID!
     street: String!
@@ -37,19 +37,9 @@ const AddressType = `
     city: String!
     country: String!
   }
-`;
-const AuthType = `
+`
+export const AuthType = `
   type Auth {
     token: String!
-    user: User!
   }
-`;
-
-module.exports = {
-  VaccineInputType,
-  VaccineType,
-  NoteInputType,
-  NoteType,
-  AuthType,
-  AddressType,
-};
+`

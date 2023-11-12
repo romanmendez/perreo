@@ -1,23 +1,21 @@
-const { Schema, model } = require("mongoose");
-const { format, formatDistanceStrict } = require("date-fns");
-const { DateTime } = require("luxon");
+import { Schema, model } from 'mongoose'
 
-const Attendance = new Schema(
-  {
-    dog: { type: Schema.Types.ObjectId, ref: "dog", required: true },
-    startTime: { type: Date, required: true },
-    endTime: { type: Date },
-    passUsed: { type: Schema.Types.ObjectId, ref: "pass_owned" },
-    payment: { type: Number },
-    balance: { type: Number },
-    notes: [{ type: Object }],
-  },
-  {
-    timestamps: true,
-  }
-);
+export const Attendance = new Schema(
+	{
+		dog: { type: Schema.Types.ObjectId, ref: 'dog', required: true },
+		startTime: { type: Date, required: true },
+		endTime: { type: Date },
+		passUsed: { type: Schema.Types.ObjectId, ref: 'pass_owned' },
+		payment: { type: Number },
+		balance: { type: Number },
+		notes: [{ type: Object }],
+	},
+	{
+		timestamps: true,
+	},
+)
 
-const AttendanceType = `
+export const AttendanceType = `
     type Attendance {
       id: ID!
       dog: Dog!
@@ -29,22 +27,17 @@ const AttendanceType = `
       notes: [Note]
       totalTime: String!
     }
-  `;
+  `
 
-const AttendanceResolver = {
-  totalTime: async (parent, args, context) => {
-    const att = await context.model.attendance.findById(parent.id);
-    const { hours, minutes } = context.utils.duration(
-      att.startTime,
-      att.endTime
-    );
-    return `${hours}h ${minutes}m`;
-  },
-};
+export const AttendanceResolver = {
+	totalTime: async (parent, args, context) => {
+		const att = await context.model.attendance.findById(parent.id)
+		const { hours, minutes } = context.utils.duration(
+			att.startTime,
+			att.endTime,
+		)
+		return `${hours}h ${minutes}m`
+	},
+}
 
-const AttendanceModel = model("attendance", Attendance);
-module.exports = {
-  AttendanceModel,
-  AttendanceType,
-  AttendanceResolver,
-};
+export const AttendanceModel = model('attendance', Attendance)
