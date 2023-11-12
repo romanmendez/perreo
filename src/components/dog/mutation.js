@@ -1,4 +1,4 @@
-import { updateResolver, deleteResolver } from '#graphql/defaults'
+import { updateResolver, deleteResolver } from '#utils/helpers'
 
 export const DogMutationType = `
   createDog(input: DogInput): Dog!

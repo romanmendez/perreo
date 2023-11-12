@@ -1,5 +1,18 @@
 import { DateTime, Duration } from 'luxon'
-import { updateResolver } from '#graphql/defaults'
+import _ from 'lodash'
+
+export async function updateResolver(model, args, context) {
+	const data = _.omit(args, ['id'])
+	return await context.model[model].findOneAndUpdate({ _id: args.id }, data, {
+		returnOriginal: false,
+	})
+}
+
+export async function deleteResolver(model, args, context) {
+	const { ok } = await context.model[model].deleteOne({ _id: args.id })
+	if (!ok) throw new Error('No record was found with this ID')
+	return ok
+}
 
 function daysBetween(start, end) {
 	return start.getDate() - end.getDate() * 24 * 60 * 60000
@@ -97,6 +110,8 @@ function totalDuration(attendancesArray) {
 }
 
 export default {
+	updateResolver,
+	deleteResolver,
 	totalDuration,
 	timeFromNow,
 	daysBetween,

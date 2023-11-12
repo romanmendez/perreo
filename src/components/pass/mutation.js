@@ -1,4 +1,4 @@
-import { updateResolver } from '#graphql/defaults'
+import { updateResolver } from '#utils/helpers'
 import { DateTime } from 'luxon'
 
 export const PassMutationType = `

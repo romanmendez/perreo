@@ -1,4 +1,4 @@
-import { updateResolver, deleteResolver } from '#graphql/defaults'
+import { updateResolver, deleteResolver } from '#utils/helpers'
 
 export const AttendanceMutationType = `
   startAttendance(dogId: String!): Attendance!

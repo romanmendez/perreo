@@ -1,4 +1,4 @@
-import { updateResolver } from '#graphql/defaults'
+import { updateResolver } from '#utils/helpers'
 
 export const OwnerMutationType = `
   createOwner(input: OwnerInput): Owner!
